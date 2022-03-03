@@ -341,12 +341,12 @@ COMPILER
 : ELSE   ( -- $$ )  THERE 0 JMP,  SWAP THEN ;
 
 : BEGIN    THERE ;  IMMEDIATE             \ THERE current dictionary address
-: WHILE     IF SWAP ;                     \ loop while EQ=false
-: -WHILE   -IF SWAP ;                     \ loop while Carry=false
-: AGAIN   ( addr --)  THERE 0 JMP, <BACK ;  \ Jump back always
-: UNTIL   ( addr --)  -IF <BACK ;     \ jump back until EQ=false
-: -UNTIL  ( addr --)   IF <BACK ;     \ jump back until EQ=true
-: OV.UNTIL           THERE 0 JNO, <BACK  ;
+: WHILE    -IF SWAP ;
+: -WHILE   IF SWAP ;
+: AGAIN   ( addr --) THERE  0 JMP, <BACK ;  \ Jump back always
+: UNTIL   ( addr --) THERE  0 JEQ, <BACK ; \ jump back until TRUE
+: -UNTIL  ( addr --) THERE  0 JNE, <BACK ; \ jump back until FALSE
+: OV.UNTIL           THERE  0 JNO, <BACK  ;
 : REPEAT  ( addr -- ) AGAIN THEN ;
 
 \ ______________________________________________________________
