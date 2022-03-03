@@ -16,5 +16,5 @@ The compiler starts.
 #### To try it type:
 
 COMPILER <enter>.  
-INCLUDE DSK2.HELLOWORLD <enter>.
-TARGET MAIN RUN <enter>.
+INCLUDE DSK2.HELLOWORLD (enter).
+TARGET MAIN RUN (<enter).
