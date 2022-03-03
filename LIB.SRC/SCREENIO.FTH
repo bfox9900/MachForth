@@ -13,11 +13,11 @@ OPT-ON
 TARGET
 VARIABLE ROW
 VARIABLE COL
-VARIABLE MDP  \ you must patch this at end of program 
+VARIABLE MDP  \ you must patch this at end of program
 
 : MFHERE  MDP @ ;    \ points to empty memory above CODE
 
-: AT-XY  ( col row --) ROW !  COL ! ;
+: AT-XY  ( col row --) -> ROW  -> COL ;
 : VPOS   ( -- Vaddr) ROW @ C/L *  COL @ + ;
 : PAGE   ( -- ) 0 0 AT-XY  VPOS C/SCR  BL VFILL -;  \ tail call optimize
 

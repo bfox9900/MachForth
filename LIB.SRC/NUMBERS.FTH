@@ -56,4 +56,4 @@ DECIMAL
 : SIGN   ( n -- ) 0 <IF  '-' HOLD  THEN DROP ;
 : UD.    ( d -- ) <#  #S  #> TYPE SPACE -;
 : U.     ( u -- ) 0 UD. -;
-: .      ( n -- ) DUP>R ABS  0 <#  #S R@ SIGN  #> RDROP TYPE SPACE -;
+: .      ( n -- ) DUP>R ABS  0 <#  #S R> SIGN  #> TYPE SPACE -;
