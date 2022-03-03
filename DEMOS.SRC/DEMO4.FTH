@@ -1,4 +1,4 @@
-\ MFORTH DEMO #3:   Use separate workspace, add a sub-routine
+\ MFORTH DEMO #4:   Use separate workspace, create and call a sub-routine
 \ return to Forth
 
 \ ************************************************************
@@ -8,14 +8,14 @@
 \ Compiler Preamble
   COMPILER
   NEW.
-  HEX 2000 ORIGIN. \ Programs that return to Forth must run at 2000
+  HEX 2000 ORIGIN. \ Programs that return to Forth must run in LOW RAM
 
 TARGET
 : MYSUB
-       FFFF #
+       FFFF
        BEGIN
        1- WHILE   \ * MForth WHILE does not consume parameter
-          DUP>R   \ push counter onto RSTACK
+          DUP>R   \ COPY counter onto RSTACK
           RDROP   \ throw it away
        REPEAT
        DROP
@@ -23,12 +23,13 @@ TARGET
 
 \ PROG: section is now only for system setup and calling our program
 PROG: DEMO4
-        3F80 WORKSPACE  \ Workspace & stacks at high end of Low RAM
+      [ 3F80 WORKSPACE  \ Workspace & stacks at high end of Low RAM
         3FD0 RSTACK
-        3FF0 DSTACK
+        3FF0 DSTACK ]
 
         MYSUB
 
-       8300 WORKSPACE   \ restore FORTH workspace
-       NEXT,            \ return to Camel99 Forth
+      [ 8300 WORKSPACE ]  \ restore FORTH workspace
+
+        NEXT,             \ return to Camel99 Forth
 END.

@@ -1,4 +1,5 @@
 \ ANS Forth verion of DEMO5 for speed comparison
+
 VARIABLE X
 VARIABLE Y
 VARIABLE Z
