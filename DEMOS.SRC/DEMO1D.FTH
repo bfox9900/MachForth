@@ -1,4 +1,4 @@
-\ MFORTH DEMO #1D  DOWN counting FOR/NEXT with incrementing TOS
+\ MFORTH DEMO1D  DOWN counting FOR/NEXT with incrementing TOS
 
 COMPILER
    HEX

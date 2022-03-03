@@ -4,8 +4,8 @@
 COMPILER
     NEW.
     HEX 2000 ORIGIN.
-\    OPT-OFF    \ 9.93 secs
-    OPT-ON    \ 9.93 secs, 12 bytes smaller
+\    OPT-OFF
+    OPT-ON
 
 TARGET
 VARIABLE Q
@@ -30,11 +30,15 @@ PROG: DEMO2
          DROP          \ in machforth, UNTIL does not consume the TOS
 
 
+\ *
+\ * NOTE: Optimizer breaks some loop exit conditions by removing instructions
+\ *
+OPT-OFF
 \ symbolic decrement,  memory to memory transfer
          FFFF -> Y  \ load Y as loop counter
          BEGIN
-              [ Y Z '! ]  \ generates:  Y @@ Z @@ MOV,
               Y  1-!      \ decrement symbol
+              [ Y Z '! ]  \ generates:  Y @@ Z @@ MOV,
          -UNTIL
-         NEXT,         \ return to Forth
+         NEXT,            \ return to Forth
 END.

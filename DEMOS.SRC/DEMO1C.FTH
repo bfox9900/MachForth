@@ -15,15 +15,16 @@ COMPILER  \ names space that has compiler directives
    HEX 2000 ORIGIN.
 
 TARGET    \ Makes code compile to TARGET memory
-PROG: DEMO1
+PROG: DEMO1C
       FFFF          \ counter -> DATA stack
       BEGIN
         1-          \ decrement # on top of data stack
       WHILE         \ WHILE does NOT consume the TOS value
       REPEAT
       DROP          \ remove number from data stack
+
       NEXT,         \ Return to Forth console
 END.
 
 \ Usage from Forth command line:
-\ DEMO1 RUN
+\ DEMO1C RUN
