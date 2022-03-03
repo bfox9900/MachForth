@@ -19,4 +19,4 @@ COMPILER (enter)
 
 INCLUDE DSK2.HELLOWORLD (enter)
 
-TARGET MAIN RUN (<enter)
+TARGET MAIN RUN (enter)
