@@ -23,7 +23,8 @@ TARGET
         TOS VDPWA @@ MOVB,
         TOS SWPB,
         TOS VDPWA @@ MOVB,
-        VDPRD @@  TOS MOV,
+        VDPRD @@ TOS MOVB,
+        TOS SWPB,
         2 LIMI, ]  ;
 
 : VC! ( c Vaddr -- )
@@ -48,11 +49,11 @@ HEX
 
 : VFILL ( Vaddr cnt char -- )
         [ TOS SWPB,
-          TOS R1 MOV,     \ R1 = CHAR
-          *SP+ R0 MOV,    \ R0 = CNT
+          TOS R1 MOV,    \ R1 = CHAR
+          *SP+ R0 MOV,   \ R0 = CNT
           *SP+ TOS MOV,
           TOS 4000 ORI, ] \ TOS = VDP write address
-          VDPA!           \ TOS is refilled
+          VDPA!          \ TOS is refilled
         [ BEGIN
             R1 VDPWD @@ MOVB,
             R0 DEC,
@@ -86,4 +87,5 @@ HEX
          2 LIMI,
          TOS DPOP,
         ]
+
 ;
