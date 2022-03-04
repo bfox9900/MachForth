@@ -20,6 +20,6 @@ The compiler starts.
 
 COMPILER (enter)
 
-INCLUDE DSK2.HELLOWORLD (enter)
+INCLUDE DSK2.HELLO (enter)
 
-TARGET MAIN RUN (enter)
+This will create a binary program called HELLO12
