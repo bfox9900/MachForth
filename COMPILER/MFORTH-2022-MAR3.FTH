@@ -130,9 +130,9 @@ ONLY FORTH DEFINITIONS ALSO XASSEMBLER
       ALSO MFORTH DEFINITIONS ;
 
 : TARGET
-      ONLY FORTH ALSO XASSEMBLER ALSO MFORTH
+      ONLY XASSEMBLER ALSO MFORTH
       POSTPONE MACHFORTH-REPL
-      ALSO TARGETS ALSO TARGETS  DEFINITIONS ;
+      ALSO TARGETS DEFINITIONS ;
 
 \ _______________________________________________
 \ SWAP BYTE optimizer
@@ -343,11 +343,13 @@ COMPILER
 : BEGIN    THERE ;  IMMEDIATE             \ THERE current dictionary address
 : WHILE    -IF SWAP ;
 : -WHILE   IF SWAP ;
-: AGAIN   ( addr --) THERE  0 JMP, <BACK ;  \ Jump back always
 : UNTIL   ( addr --) THERE  0 JEQ, <BACK ; \ jump back until TRUE
-: -UNTIL  ( addr --) THERE  0 JNE, <BACK ; \ jump back until FALSE
-: OV.UNTIL           THERE  0 JNO, <BACK  ;
+: -UNTIL  ( addr --) THERE  0 JNE, <BACK ; \ jump back until TRUE
+: AGAIN   ( addr --) THERE  0 JMP, <BACK ;  \ Jump back always
 : REPEAT  ( addr -- ) AGAIN THEN ;
+
+: OV.UNTIL  ( addr --) THERE  0 JNO, <BACK  ; \ Used by DO/LOOP
+: NC.UNTIL  ( addr --) THERE  0 JOC, <BACK ; \ jump back until FALSE
 
 \ ______________________________________________________________
 HOST CR .( Forth Intrinics)
@@ -473,7 +475,7 @@ HEX
 
 \ now we can define the FOR NEXT LOOP
 : FOR  ( n --)  I RPUSH,   I!  POSTPONE BEGIN ;
-: NEXT ( -- )   I1-!  -UNTIL  I RPOP, ;
+: NEXT ( -- )   I1-!  NC.UNTIL  I RPOP, ;
 
 \ __________[ Chuck Moore Machine Forth Ends ]__________
 
@@ -589,7 +591,7 @@ HEX
  : COLD
         WARM
         E1 7 VWTR
-        CR ." Machine Forth Compiler V2.2  BFox"
+        CR ." Machine Forth Compiler V2.3  BFox"
         INIT-WORDLISTS
         COMPILER
         CR ORDER
