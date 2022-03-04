@@ -8,6 +8,7 @@ COMPILER  \ preamble to set up target image
   HEX 2000 ORIGIN.
 
 INCLUDE DSK2.SCREENIO
+INCLUDE DSK2.GRAPHICS
 
 TARGET
 CREATE A$  S" This is line 1. " S,
@@ -26,7 +27,7 @@ OPT-ON
 
 DECIMAL
 PROG: DEMO13
-      PAGE
+      GRAPHICS 
       0 0 AT-XY
       A$ COUNT TYPE CR
       B$ COUNT TYPE
