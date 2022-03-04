@@ -16,7 +16,7 @@ VARIABLE Z
 : WORD2   WORD1  X @  2/  Y ! ;
 : WORD3   WORD2  Y @  2*  Z ! ;
 
-\ *TRY these with regular ;  to see the difference.
+\ *TRY these with regular -;  to see the difference.
 : WORD4   WORD3 ;  \ CAN use tail-call optimzer because last word is a call
 : WORD5   WORD4 ;
 : WORD6   WORD5 ;
