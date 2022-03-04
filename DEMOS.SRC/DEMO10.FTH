@@ -14,7 +14,7 @@
 COMPILER  \ preamble to set up target image
   NEW.
   HEX 2000 ORIGIN.
-  OPT-OFF
+  OPT-ON
 
 \ load libraries in compiler space
  INCLUDE DSK2.VDPLIB
@@ -52,8 +52,8 @@ PROG: DEMO10
         WAIT
         43 FILLSCREEN
         WAIT
-        OPT-OFF ( opt can't be used.)
-        90 FOR   BL I@ + FILLSCREEN   NEXT
+        OPT-OFF  \ optimizer breaks this loop code 
+        5F FOR   BL I@ + FILLSCREEN   NEXT
         E1 7 VWTR     \ gray on black
         NEXT,         \ return to Camel99 Forth
 END.
