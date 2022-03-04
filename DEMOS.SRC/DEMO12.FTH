@@ -1,12 +1,12 @@
 \ DEMO11.FTH   minimal hello world in machine Forth  Mar 4 2022 Brian Fox
 \ Compile and save to EA5 binary program
 
-INCLUDE DSK2.SAVEIMG  \ needed to save binary programs
 
 COMPILER
    NEW.
    HEX 2000 ORIGIN.
-   OPT-ON \ 160 BYTES
+   OPT-OFF \ 160 BYTES
+   OPT-ON  \ 148 BYTES 
 
 COMPILER
 \ EQU & CONSTANTS must be declared in compiler space
@@ -31,8 +31,6 @@ PROG: MAIN
     TXT COUNT
     1- FOR
        COUNT VDPWD C!          \ write byte to VDP write port
-       COUNT [ VDPWD #C! ]     \ write byte to VDP write port symbolic 
-
   \   [ *TOS+ VDPWD @@ MOVB, ]  \ faster inline ASM version
     NEXT
     DROP
@@ -43,4 +41,5 @@ PROG: MAIN
    [ 0000 @@ BLWP, ]
 END.
 
+COMPILER INCLUDE DSK2.SAVEIMG  \ needed to save binary programs
 SAVE DSK2.HELLO12
