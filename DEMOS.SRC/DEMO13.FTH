@@ -8,7 +8,6 @@ COMPILER  \ preamble to set up target image
   HEX 2000 ORIGIN.
 
 INCLUDE DSK2.SCREENIO
-INCLUDE DSK2.GRAPHICS
 
 TARGET
 CREATE A$  S" This is line 1. " S,
@@ -27,7 +26,7 @@ OPT-ON
 
 DECIMAL
 PROG: DEMO13
-      GRAPHICS 
+      PAGE
       0 0 AT-XY
       A$ COUNT TYPE CR
       B$ COUNT TYPE
@@ -38,6 +37,4 @@ PROG: DEMO13
 END.
 
 \ patch TARGET variable MDP, that holds end of memory
-COMPILER THERE 4 +   TARGET  T' MDP T!
-
-TARGET
+COMPILER THERE 4 +   TARGET T' DP T!

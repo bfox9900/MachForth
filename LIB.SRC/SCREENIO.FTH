@@ -1,4 +1,5 @@
 \ SCREENIO library for MachForth  Mar 4 2022 Brian Fox
+\ Updated to use more symbolic addressing on variables
 
 INCLUDE DSK2.VDPLIB
 
@@ -12,31 +13,31 @@ OPT-ON
 TARGET
 VARIABLE ROW
 VARIABLE COL
-VARIABLE MDP  \ you must patch this at end of program
+VARIABLE DP  \ you must patch this at end of program
 
-: MFHERE  MDP @ ;    \ points to empty memory above CODE
+: HERE   ( -- addr) [ DP #@ ] ;   \ points to end of Forth code
 
 : AT-XY  ( col row --) -> ROW  -> COL ;
-: VPOS   ( -- Vaddr) ROW @ C/L @ *  COL @ + ;
+: VPOS   ( -- Vaddr) [ ROW #@ C/L #@ ] *  [ COL #@ ] + ;
 : PAGE   ( -- ) 0 0 AT-XY  VPOS C/SCR @  BL VFILL -;  \ tail call optimize
 
-: 23LINES ( -- n) C/SCR @ C/L @ - ;
+: 23LINES ( -- n) [ C/SCR #@  C/L #@ ]  - ;
 
 : SCROLL ( Vaddr -- Vaddr) \ full-screen buffer. wasteful but fast
         0
-        DUP  C/L @ +  MFHERE 23LINES VREAD   \ get 2nd line
-        MFHERE      OVER   23LINES VWRITE  \ write to 1st line
+        DUP  [ C/L #@ ] +  HERE 23LINES VREAD   \ get 2nd line
+        HERE      OVER   23LINES VWRITE  \ write to 1st line
         DROP
         0 23 AT-XY
-        VPOS C/L @ BL VFILL -;  \ tail call optimize
+        VPOS [ C/L #@ ] BL VFILL -;  \ tail call optimize
 
 : CR    ( -- )
         COL OFF
         ROW DUP 1+! @ 24 >IF  SCROLL  THEN DROP ;
 
 : EMIT  ( c --)
-       ROW @ C/L @ *  COL @ +  VC!
-       COL DUP 1+! @  C/L @ 1- >IF  CR  THEN DROP ;
+       [ ROW #@  C/L #@ ] *  [ COL #@ ] +  VC!
+       COL DUP 1+! @  [ C/L #@ ] 1- >IF  CR  THEN DROP ;
 
 : TYPE   ( addr len --) FOR  COUNT EMIT  NEXT DROP ;
 
