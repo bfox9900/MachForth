@@ -20,7 +20,7 @@ VARIABLE MDP  \ you must patch this at end of program
 : VPOS   ( -- Vaddr) ROW @ C/L @ *  COL @ + ;
 : PAGE   ( -- ) 0 0 AT-XY  VPOS C/SCR @  BL VFILL -;  \ tail call optimize
 
-: 23LINES ( -- n) C/SCR @ C/L @ - ; 
+: 23LINES ( -- n) C/SCR @ C/L @ - ;
 
 : SCROLL ( Vaddr -- Vaddr) \ full-screen buffer. wasteful but fast
         0
@@ -42,5 +42,3 @@ VARIABLE MDP  \ you must patch this at end of program
 
 : SPACE  ( -- )   BL EMIT -; \ tail call optimize
 : SPACES ( n -- ) FOR  SPACE  NEXT ;
-\ 656 bytes including VDPLIB
-\ 674 bytes OPT-OFF
