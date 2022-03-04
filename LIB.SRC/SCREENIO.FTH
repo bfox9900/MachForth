@@ -4,7 +4,6 @@ INCLUDE DSK2.VDPLIB
 
 COMPILER
 DECIMAL
-920 CONSTANT 23LINES
 VARIABLE C/L     40  T' C/L T!    \ init chars per line
 VARIABLE C/SCR   960 T' C/SCR T!  \ init chars per screen
 
@@ -20,6 +19,8 @@ VARIABLE MDP  \ you must patch this at end of program
 : AT-XY  ( col row --) -> ROW  -> COL ;
 : VPOS   ( -- Vaddr) ROW @ C/L @ *  COL @ + ;
 : PAGE   ( -- ) 0 0 AT-XY  VPOS C/SCR @  BL VFILL -;  \ tail call optimize
+
+: 23LINES ( -- n) C/SCR @ C/L @ - ; 
 
 : SCROLL ( Vaddr -- Vaddr) \ full-screen buffer. wasteful but fast
         0
