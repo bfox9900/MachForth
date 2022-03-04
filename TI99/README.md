@@ -3,7 +3,10 @@
 ### Typical Setup
 
 DSK1  has the CAMEL99 Forth system disk.
-DSK2  has the MachForth disk with the MACHFORTH binary program (3 files).
+
+DSK2  has the MachForth disk with the MACHFORTH binary program (3 files)
+
+DSK2  also has the library files
 
 Editor Assembler Cartridge or equivalent program loader is required.
 
