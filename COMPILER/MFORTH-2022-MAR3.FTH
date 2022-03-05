@@ -3,27 +3,8 @@
 
 \ Feb 2022: DROP/DUP optimizer counts DUPs. No optimizing until DUPS>1
 
-\ *** ADDED PENDING DROP   ?DROP   concept to optimizer ***
-
-\ The Machine Forth disk should be in DSK2.
-\ To build the cross compiler your need Editor/Assembler Cartridge
-\ 1.  Select menu option 5 "Run Program File"
-\ 2.  At the prompt type: DSK1.CAMEL99
-\ 3.  When Camel Forth is loaded type:  INCLUDE DSK2.MFORTH,FTH
-\ 4.  The machine forth compiler is ready when the black screen appears
-
 \ *To cross-compile a program
 \  With the MACHFORTH ready type: INCLUDE <DSK2.MYPROGRAM>
-
-\ 4.  See the demo programs provided for examples
-\ 5.  After your program compiles type SAVE <DSK1.PROGNAME>
-\              -OR-
-\     You can place the SAVE command at the bottom of your
-\     program to save it automatically after compiling.
-\
-\ 6.  Type FORTH BYE to return to TI-99 Title screen
-\ 7.  Use E/A menu 5 and RUN your saved program.
-\ ________________________________________________________
 
 NEEDS FORTH     FROM DSK1.WORDLISTS
 
@@ -92,7 +73,7 @@ XASSEMBLER DEFINITIONS
     IF               \ IF CROSS-compiling, emit machine code
        SMARTDUP,     \ push TOS if we need to.
        TOS SWAP LI,  \ compile n as a literal number into R4.
-    THEN  ; \ If interpreting just put n on Forth stack .
+    THEN  ;          \ If interpreting just put n on Forth stack .
 
 ONLY FORTH DEFINITIONS ALSO XASSEMBLER
 : <MFINTERP> ( c-addr u -- ) \ machforth compiler interpret loop
@@ -330,22 +311,18 @@ COMPILER
 : RESOLVE ( addrofjmp byte --)  2- 2/ SWAP 1+ C! ;
 : <BACK   ( addr addr' -- ) TUCK -  RESOLVE ;
 
-\ Changed from Chuck's original code and use EQ flag
 : -IF    ( -- $$)   THERE 0 JNC, ;
 : IF     ( -- $$)   THERE 0 JNE, ;
-
-\ Chuck used Carry flag conditional. Kept it with new name
 : NC.IF  ( -- $$)   THERE 0 JOC, ;  \ GOTO then if Carry=True
-
 : THEN   ( addr --) THERE OVER - RESOLVE ;
 : ELSE   ( -- $$ )  THERE 0 JMP,  SWAP THEN ;
 
-: BEGIN    THERE ;  IMMEDIATE             \ THERE current dictionary address
+: BEGIN    THERE ;  IMMEDIATE
 : WHILE    -IF SWAP ;
 : -WHILE   IF SWAP ;
-: UNTIL   ( addr --) THERE  0 JEQ, <BACK ; \ jump back until TRUE
-: -UNTIL  ( addr --) THERE  0 JNE, <BACK ; \ jump back until TRUE
-: AGAIN   ( addr --) THERE  0 JMP, <BACK ;  \ Jump back always
+: UNTIL   ( addr --) THERE  0 JEQ, <BACK ;
+: -UNTIL  ( addr --) THERE  0 JNE, <BACK ;
+: AGAIN   ( addr --) THERE  0 JMP, <BACK ;
 : REPEAT  ( addr -- ) AGAIN THEN ;
 
 : OV.UNTIL  ( addr --) THERE  0 JNO, <BACK  ; \ Used by DO/LOOP
@@ -366,17 +343,17 @@ HEX
 : #     ( n -- ) SMARTDUP,  TOS SWAP LI, ;
 : #@    ( addr -- n)   SMARTDUP, ( addr) @@ TOS MOV, ;
 : @     ( TOSaddr -- n) *TOS TOS MOV, ;
-\ : (@)   ( ndx addr)     (TOS) TOS MOV, ;
+\ : [@]   ( ndx addr)     (TOS) TOS MOV, ;
 
 \ added byte operations: BFox
 : #C@   ( addr -- c)   DUP  @@ TOS MOVB,  TOS 8 SRL, ;
 : C@    ( TOSaddr -- c) *TOS TOS MOVB,  TOS 8 SRL, ;
 
-: (!)   ( n variable -- ) TOS SWAP  @@ MOV, ; \ DUP n !
+: (!)   ( n variable -- ) TOS SWAP  @@ MOV, ; \  n DUP addr !
 : #!    ( n variable -- ) (!)  DROP ; \ 6 bytes
 : !     ( n TOSaddr --)  *SP+ *TOS MOV, DROP ;
 
-: (C!)  ( c addr --) TOS SWPB,  TOS SWAP @@ MOVB, ; \ DUP c C!
+: (C!)  ( c addr --) TOS SWPB,  TOS SWAP @@ MOVB, ; \ c DUP addr  C!
 : #C!   ( c addr --) (C!)  DROP ;
 : C!    ( c addr --) 1 (SP) *TOS MOVB,  SP INCT,  DROP ;
 
@@ -384,7 +361,7 @@ HEX
 : 2*    ( n -- n ) TOS TOS ADD, ;
 : 2/    ( n -- n)  TOS 1 SRA, ;
 : INVERT ( n -- )  TOS INV, ;  ( ANS Forth name )
-: AND,  ( n mask -- n) *SP INV, *SP+ TOS SZC, ; \ and stack values
+: AND  ( n mask -- n) *SP INV, *SP+ TOS SZC, ; \ and stack values
 : #AND  ( n n -- n ) TOS SWAP ANDI, ;  \ and TOS with literal number
 : XOR   ( n n -- n)  *SP+ TOS XOR, ;   \ (option 1)
 : +     ( n n -- n)  *SP+ TOS ADD, ;   \ (option 1) add on stack
