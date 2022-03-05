@@ -25,7 +25,7 @@ TARGET
         TOS VDPWA @@ MOVB,
         VDPRD @@ TOS MOVB,
         TOS SWPB,
-        2 LIMI, ]  ;
+        2 LIMI, ] ;
 
 : VC! ( c Vaddr -- )
       [ TOS 4000 ORI,
@@ -44,7 +44,7 @@ HEX
 \ * VDP write to register. Kept the TI name
 : VWTR   ( c reg -- )   \ Usage: 5 7 VWTR
            >< +         \ combine 2 bytes to one cell
-          [ 8000 ] #OR VDPA!
+          [ 8000 #OR ] VDPA!
           [ 2 LIMI, ] ;
 
 : VFILL ( Vaddr cnt char -- )

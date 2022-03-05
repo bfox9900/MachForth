@@ -1,7 +1,7 @@
 \ numbers.fth  MachForth number printing lib
 COMPILER
 \ constants declared in compiler space
-  CHAR 0 EQU '0'
+\  CHAR 0 EQU '0'
   CHAR - CONSTANT '-'
 HEX 3FFF CONSTANT #BUFF \ top end of low RAM used as digit buffer
 
@@ -17,7 +17,7 @@ DECIMAL
         HI IF,
             TOS 7 AI,
         ENDIF,
-        TOS '0' AI, ]
+        TOS 30 AI, ]
 ;
 
 TARGET
