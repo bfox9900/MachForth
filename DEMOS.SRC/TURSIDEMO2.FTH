@@ -1,4 +1,5 @@
 \ Tursi's famous Sprite benchmark    Mar 5 2022   Fox
+\ Added some optimization methods to get closer to GCC speed of ~5 seconds
 
 COMPILER
    NEW.
@@ -6,14 +7,21 @@ COMPILER
 
 \ We can use the Host Forth colon to make a macro
 COMPILER
-INCLUDE DSK2.VDPLIB
+INCLUDE DSK2.SCREENIO
+INCLUDE DSK2.GRAPHICS
+INCLUDE DSK2.SPRITES
 INCLUDE DSK2.BYE
+
+
+OPT-ON
 
 COMPILER
 HEX
 0380 CONSTANT CTAB      \ colour table VDP address
-0300 CONSTANT $300
-0301 CONSTANT $301
+
+\ ## EQU does not generate code. Just returns a number for the compiler to use.
+0043 EQU W$300      \ write bit set, and byte-swapped.
+0143 EQU W$301      \ write bit set, and byte-swapped
 
 \ A few screen variables
 TARGET
@@ -42,32 +50,22 @@ HEX
 : MAGNIFY  ( mag-factor -- )
         83D4 C@  0FC AND +  DUP 1 VWTR  83D4 C! ;
 
-: SPRITE0  ( char colr x y -- ) \ create a SPRITE, sp# = 0..31
-           300  VC!      \ set Y position
-           301  VC!      \ set X position
-           303  VC!      \ set the sprite color
-           302  VC!      \ set the character pattern to use
-;
-
 TARGET
 DECIMAL
 : TURSI    \ ~15 seconds
       GRAPHICS
-      42  6  0  0 SPRITE0
+      42  6  0  0  0 SPRITE
       1 MAGNIFY
       100
       FOR
-        0    239 FOR  DUP $301 VC! 1+  NEXT DROP
-        0    175 FOR  DUP $300 VC! 1+  NEXT DROP
+         0 239 FOR  DUP SP.X! 1+ NEXT DROP
+         0 175 FOR  DUP SP.Y! 1+ NEXT DROP
 
-        239  FOR  I@  $301 VC!  NEXT
-        175  FOR  I@  $300 VC!  NEXT
+           239  FOR  I@ SP.X!  NEXT
+           175  FOR  I@ SP.Y!  NEXT
       NEXT
       DROP
 
-      BEGIN
-        ?TERMINAL
-      UNTIL  \ wait for FCNT 4
       BYE
 ;
 
@@ -80,7 +78,9 @@ PROG: MAIN
       83FE DSTACK ]
 
       TURSI
+
+      NEXT,
 END.
 
 COMPILER INCLUDE DSK2.SAVEIMG
-SAVE DSK2.TURSIBENCH
+SAVE DSK2.TURSI2
