@@ -1,10 +1,13 @@
 \ MACHFORTH GRAPHICS MODE Library               Mar 3 2022  Brian Fox
 
+COMPILER
+HEX
+0380 CONSTANT CTAB      \ colour table VDP address
 TARGET
 VARIABLE VMODE
 
 HEX
-: SCREEN   ( c --) 7  VWTR -;
+: SCREEN   ( c --)  7 VWTR -;
 
 : TEXT   ( -- )
     0 DUP 0 VWTR  \ TEXT MODE no external video 0
@@ -30,7 +33,7 @@ HEX
          01  4  VWTR
          06  5  VWTR
          01  6  VWTR
-        380 13 10 VFILL  \ charset colors
+        CTAB 13 10 VFILL  \ charset colors
              17 SCREEN    \ BLACK on CYAN
           20 -> C/L
          300 -> C/SCR

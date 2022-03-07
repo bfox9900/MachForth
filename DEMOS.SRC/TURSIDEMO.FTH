@@ -7,7 +7,7 @@ COMPILER
 \ We can use the Host Forth colon to make a macro
 COMPILER
 INCLUDE DSK2.VDPLIB
-INCLUDE DSK2.BYE
+INCLUDE DSK2.MENU
 
 COMPILER
 HEX
@@ -15,39 +15,8 @@ HEX
 0300 CONSTANT $300
 0301 CONSTANT $301
 
-\ A few screen variables
-TARGET
-VARIABLE C/L
-VARIABLE C/SCR
-VARIABLE VMODE
-
 OPT-OFF
 HEX
-: GRAPHICS
-         0  CTAB 0 VFILL
-         0E0 DUP 83D4 C! 1 VWTR
-          0    2  VWTR    \ set VDP screen page
-         0E    3  VWTR
-         01    4  VWTR
-         06    5  VWTR
-         01    6  VWTR
-         CTAB 10  10  VFILL  \ charset colors
-         27    7  VWTR         \ screen color
-         20  -> C/L
-         300 -> C/SCR
-         1 -> VMODE
-         0 300 20  VFILL  -;
-
-HEX
-: MAGNIFY  ( mag-factor -- )
-        83D4 C@  0FC AND +  DUP 1 VWTR  83D4 C! ;
-
-: SPRITE0  ( char colr x y -- ) \ create a SPRITE, sp# = 0..31
-           300  VC!      \ set Y position
-           301  VC!      \ set X position
-           303  VC!      \ set the sprite color
-           302  VC!      \ set the character pattern to use
-;
 
 TARGET
 DECIMAL

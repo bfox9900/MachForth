@@ -10,7 +10,7 @@ COMPILER
 INCLUDE DSK2.SCREENIO
 INCLUDE DSK2.GRAPHICS
 INCLUDE DSK2.SPRITES
-INCLUDE DSK2.BYE
+INCLUDE DSK2.MENU
 
 
 OPT-ON
@@ -66,7 +66,7 @@ DECIMAL
       NEXT
       DROP
 
-      BYE
+      MENU
 ;
 
 \ prog: names the entry address for the images
