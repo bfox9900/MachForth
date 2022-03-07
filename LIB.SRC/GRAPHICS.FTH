@@ -18,7 +18,7 @@ HEX
             83D4 C!
        40 -> C/L
       3C0 -> C/SCR
-       2 -> VMODE
+        2 -> VMODE
        PAGE -;
 
 : GRAPHICS
@@ -32,7 +32,7 @@ HEX
          01  6  VWTR
          380 10 10 VFILL  \ charset colors
              17 SCREEN    \ BLACK on CYAN
-         20 -> C/L
+          20 -> C/L
          300 -> C/SCR
-         1 -> VMODE
+           1 -> VMODE
          PAGE -;
