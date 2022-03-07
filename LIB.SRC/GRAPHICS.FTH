@@ -1,11 +1,8 @@
 \ MACHFORTH GRAPHICS MODE Library               Mar 3 2022  Brian Fox
 
-COMPILER
-NEW.
-HEX 2000 ORIGIN.
-
 TARGET
 VARIABLE VMODE
+
 HEX
 : SCREEN   ( c --) 7  VWTR -;
 
