@@ -6,24 +6,25 @@ COMPILER
 
 \ We can use the Host Forth colon to make a macro
 COMPILER
-INCLUDE DSK2.VDPLIB
-INCLUDE DSK2.MENU
+INCLUDE DSK2.SCREENIO
+INCLUDE DSK2.GRAPHICS
+INCLUDE DSK2.SPRITES
+INCLUDE DSK2.BYE
 
 COMPILER
 HEX
-0380 CONSTANT CTAB      \ colour table VDP address
-0300 CONSTANT $300
-0301 CONSTANT $301
+300 CONSTANT $300
+301 CONSTANT $301
 
 OPT-OFF
-HEX
-
 TARGET
 DECIMAL
 : TURSI    \ ~15 seconds
       GRAPHICS
-      42  6  0  0 SPRITE0
+\    char clr  x  y  spr#
+      42  6    0  0   0 SPRITE
       1 MAGNIFY
+
       100
       FOR
         0    239 FOR  DUP $301 VC! 1+  NEXT DROP
@@ -33,11 +34,6 @@ DECIMAL
         175  FOR  I@  $300 VC!  NEXT
       NEXT
       DROP
-
-      BEGIN
-        ?TERMINAL
-      UNTIL  \ wait for FCNT 4
-      BYE
 ;
 
 \ prog: names the entry address for the images
@@ -49,6 +45,7 @@ PROG: MAIN
       83FE DSTACK ]
 
       TURSI
+      BYE
 END.
 
 COMPILER INCLUDE DSK2.SAVEIMG
