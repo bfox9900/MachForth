@@ -30,8 +30,8 @@ DECIMAL
         0    239 FOR  DUP $301 VC! 1+  NEXT DROP
         0    175 FOR  DUP $300 VC! 1+  NEXT DROP
 
-        239  FOR  I@  $301 VC!  NEXT
-        175  FOR  I@  $300 VC!  NEXT
+             239 FOR  I@  $301 VC!  NEXT
+             175 FOR  I@  $300 VC!  NEXT
       NEXT
       DROP
 ;
