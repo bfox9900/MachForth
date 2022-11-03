@@ -4,11 +4,12 @@
 \ This demo shows how to:
 \  1. compile to 2000 origin
 \  2. set the workspace and stacks in 16bit scratch-pad RAM
-\  3. how to exit program to TI-99 title PAGE
-\  4. How to use inline Assembler
-\  5. save a finished program that can RUN from E/A Option 5
+\  3. how to exit program to TI-99 title page
+\  4. How to use inline Assembler with CODE ENDCODE
+\  6. Demonstrate turning compiler on or off inside the code
+\  5. Save a finished program that can RUN from E/A Option 5
 
-\  *PRESS FCTN 4 to return to title screen
+\  *** PRESS FCTN 4 to return to title screen *** 
 
 COMPILER
    HEX
@@ -17,11 +18,11 @@ COMPILER
    OPT-ON
 
 TARGET
-: BYE ( -- )  \ make a named sub-routine
-    [ 0 LIMI,           \ use '[' to code inline Assembler
-      83C4 @@ CLR,
-      0000 @@ BLWP, ]   \ end ALC with ']'
-;
+CODE BYE ( -- )  \ make a named sub-routine
+      0 LIMI,          \ disable interrupts
+      83C4 @@ CLR,     \ clear GPL status
+      0000 @@ BLWP,    \ return to TI-99 title page
+ENDCODE
 
 PROG: DEMO1B
 \ assembler setup commands must run in the interpreter
@@ -32,7 +33,7 @@ PROG: DEMO1B
        83FE DSTACK    \ alias for SP 83BE LI,  ( 20 cell data stack )
     ]                 \ turn on the compiler
        0BEEF          \ >BEEF -> DATA stack
-     [ DECIMAL ]      \ must change radix in interpreter mode
+     [ DECIMAL ]      \ change compiler radix in interpreter mode
        BEGIN
           22 - 7 *   \ do some math with literal numbers
          ?TERMINAL    \ test for Break key uses CPU status register not TOS
@@ -41,5 +42,4 @@ PROG: DEMO1B
        BYE            \ Go home
 END.
 
-COMPILER INCLUDE DSK2.SAVEIMG
-SAVE DSK2.DEMO1B
+COMPILER SAVE DSK2.DEMO1B

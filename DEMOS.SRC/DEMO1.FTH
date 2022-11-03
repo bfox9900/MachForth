@@ -18,7 +18,7 @@ PROG: DEMO1
       4             \ 4  Literal numbers compile as LI TOS,n
       BEGIN
          1+        \ inc # on top of data stack
-          ?TERMINAL  \ test for Break key
+        ?TERMINAL  \ test for Break key
       UNTIL         \ MACHINE FORTH uses native status register
       DROP          \ remove number from data stack
       NEXT,         \ Return to Forth console
