@@ -1,5 +1,5 @@
-\ VDPLIB.FTH library  for MACHFORTH V2022   Feb 15 2022 Fox
-\ 208 bytes
+\ VDPLIB.FTH library  for MACHFORTH V2022   Nov 3 2022 Fox
+
 COMPILER
 HEX
 8800 CONSTANT VDPRD
@@ -8,71 +8,70 @@ HEX
 8C02 CONSTANT VDPWA
 
 TARGET
-: VDPA! ( Vaddr -- )   \ set vdp address (read mode)
-        [ 0 LIMI,
-        TOS SWPB,
-        TOS VDPWA @@ MOVB,
-        TOS SWPB,
-        TOS VDPWA @@ MOVB,
-        TOS DPOP, ]
-;
+CODE VDPA! ( Vaddr -- )   \ set vdp address (read mode)
+       R1 STWP,
+       0 LIMI,
+       9 R1 () VDPWA @@ MOVB,  \ write oddddyte from TOS (ie: R4)
+       TOS     VDPWA @@ MOVB,  \ MOV writes the even byte to the port address
+       TOS DPOP,
+ENDCODE
 
-: VC@    ( addr -- c)
-        [ 0 LIMI,
-        TOS SWPB,
-        TOS VDPWA @@ MOVB,
-        TOS SWPB,
-        TOS VDPWA @@ MOVB,
-        VDPRD @@ TOS MOVB,
-        TOS SWPB,
-        2 LIMI, ]  ;
+CODE VC@    ( addr -- c)
+       R1 STWP,
+       0 LIMI,
+       9 R1 () VDPWA @@ MOVB,  \ write odd byte from TOS (ie: R4)
+       TOS     VDPWA @@ MOVB,  \ MOV writes the even byte to the port address
+       TOS CLR,
+       VDPRD @@ 9 R1 () MOVB,  \ read data into odd byte of R4
+       \ 2 LIMI,
+ENDCODE
 
-: VC! ( c Vaddr -- )
-      [ TOS 4000 ORI,
-        0 LIMI,
-        TOS SWPB,
-        TOS VDPWA @@ MOVB,
-        TOS SWPB,
-        TOS VDPWA @@ MOVB,
-        TOS DPOP,
-        TOS SWPB, TOS VDPWD @@ MOVB,
-        2 LIMI,
-        TOS DPOP, ]
-;
+CODE VC! ( c Vaddr -- )
+       TOS 4000 ORI,
+       R1 STWP,                \ avoids 2 SWPB instructions
+       0 LIMI,
+       9 R1 () VDPWA @@ MOVB,  \ write odd byte from TOS (ie: R4)
+       TOS     VDPWA @@ MOVB,  \ MOV writes the even byte to the port address
+       TOS DPOP,
+       9 R1 () VDPWD @@ MOVB,  \ Odd byte R4, write to screen
+       \ 2 LIMI,
+       DROP                    \ refill TOS
+ENDCODE
 
 HEX
 \ * VDP write to register. Kept the TI name
 : VWTR   ( c reg -- )   \ Usage: 5 7 VWTR
            >< +         \ combine 2 bytes to one cell
-          [ 8000 ] #OR VDPA!
-          [ 2 LIMI, ] ;
+          [ 8000 OR] VDPA!
+          [ \ 2 LIMI,  ] ;
 
 : VFILL ( Vaddr cnt char -- )
-        [ TOS SWPB,
-          TOS R1 MOV,    \ R1 = CHAR
+        [ TOS R5 MOV,    \ R5 = CHAR
+          R5 SWPB,
           *SP+ R0 MOV,   \ R0 = CNT
           *SP+ TOS MOV,
-          TOS 4000 ORI, ] \ TOS = VDP write address
-          VDPA!          \ TOS is refilled
-        [ BEGIN
-            R1 VDPWD @@ MOVB,
+          TOS 4000 ORI,  \ TOS = VDP write address
+        ] VDPA! [          \ TOS is refilled
+          BEGIN
+            R5 VDPWD @@ MOVB,
             R0 DEC,
           -UNTIL
-          2 LIMI, ]
+          \ 2 LIMI,
+         ] DROP
 ;
- 
+
 : VREAD ( Vaddr addr n --)
          [ TOS R0 MOV,
-           *SP+ R1 MOV,  \ r1 = addr
+           *SP+ R5 MOV,  \ R5 = addr
            *SP+ TOS MOV,
          ]
            VDPA!         \ TOS is refilled after this call
          [ BEGIN
-             VDPRD @@  R1 *+ MOVB,
+             VDPRD @@  R5 *+ MOVB,
              R0 DEC,
           -UNTIL
-           2 LIMI,
-         ]
+           \ 2 LIMI,
+         ] DROP
 ;
 
 : VWRITE ( addr Vaddr len -- )
@@ -84,8 +83,6 @@ HEX
            *TOS+ VDPWD @@ MOVB,
             R0 DEC,
          -UNTIL
-         2 LIMI,
-         TOS DPOP,
-        ]
-
+         \ 2 LIMI,
+        ] DROP
 ;
