@@ -7,21 +7,41 @@ COMPILER
    HEX
    NEW.
    2000 ORIGIN.
-   OPT-OFF
+   OPT-OFF    \ V2.6 optimizer is disabled inside FOR NEXT loops
+             \ you can over-ride if your code will run.
 
 TARGET
 
 VARIABLE X
+: LOOP1
+        FFFF FOR
+          I@ X !      \ FOR/NEXT loop index to X
+        NEXT ;
 
-\ FORTH fetch and store 5 seconds
-\ ASM   using 9900 mem2mem  1.5 seconds
+: LOOP2
+     FFFF FOR
+       I@ [ X !]      \ new symbolic addressing syntax TOS <address> store
+     NEXT ;
+
+: LOOP3
+      FFFF FOR
+        I@ -> X       \ alternate symbolic addressing syntax
+      NEXT ;
+
+: LOOP4
+      FFFF FOR
+        [ I X @@ MOV, ]  \ inline Assembler with I register.
+      NEXT ;
+
+\ FORTH syntax fetch and store 5 seconds
+\ symbolic addressing 4 seconds
+\ Inline ASM 1.5 seconds
 PROG: DEMO1E
-        FFFF
-        FOR
-          I@  X !        \ loop index -> X
-          I@ -> X        \ symbolic addressing of X
-        [ I X @@ MOV, ]  \ I register to symbolic is fastest & smallest
-        NEXT
+
+      LOOP1
+      LOOP2
+      LOOP3
+      LOOP4
 
       NEXT,      \ Return to Forth
 END.

@@ -4,41 +4,29 @@
 COMPILER
     NEW.
     HEX 2000 ORIGIN.
-\    OPT-OFF
-    OPT-ON
+\ *
+\ * NOTE: Optimizer breaks some loop exit conditions by removing instructions
+\ *
+    OPT-OFF
 
 TARGET
-VARIABLE Q
 VARIABLE Z
 VARIABLE Y
 
 PROG: DEMO2
-\ conventional Forth syntax
-         FFFF
+\ STANDARD SYNTAX  10 seconds
+         FFFF Y !
          BEGIN
-            DUP Q !
-            1-
-         -UNTIL        \ loop until tos=0
-         DROP          \ in machforth, UNTIL does not consume the TOS
-
-\ symbolic addressing (register to memory)
-         FFFF
-         BEGIN
-            DUP -> Z   \ tos to Z
-            1-
-         -UNTIL        \ loop until tos=0
-         DROP          \ in machforth, UNTIL does not consume the TOS
-
-
-\ *
-\ * NOTE: Optimizer breaks some loop exit conditions by removing instructions
-\ *
-OPT-OFF
-\ symbolic decrement,  memory to memory transfer
-         FFFF -> Y  \ load Y as loop counter
-         BEGIN
-              Y  1-!      \ decrement symbol
-              [ Y Z '! ]  \ generates:  Y @@ Z @@ MOV,
+             Y @ Z !
+             -1 Y +!
          -UNTIL
-         NEXT,            \ return to Forth
+
+\ SYMBOLIC ADDRESSING: store to variable, memory to memory transfer, decrment
+\  3 seconds
+         FFFF [ Y !]    \ TOS load to Y 
+         BEGIN
+            [ Y Z ]!    \ mem2mem move:  Y @@ Z @@ MOV,
+            [ Y  1-!]
+         -UNTIL
+         NEXT,          \ return to Forth
 END.
