@@ -1,5 +1,6 @@
 \ MFORTH DEMO1D  DOWN counting FOR/NEXT with incrementing TOS
 
+
 COMPILER
    HEX
    NEW.
@@ -12,7 +13,7 @@ PROG: DEMO1D      ( 1.2 seconds run time )
        FFFF       \ loop limit goes to TOS register
        FOR        \ FOR consumes it's argument from TOS, brings 0 to TOS
           1+      \ inc on top of stack
-       NEXT
+       NEXT       \ decrement the I register (R8) and jump back
 
        NEXT,      \ Return to Forth
 END.

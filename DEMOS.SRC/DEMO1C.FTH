@@ -1,7 +1,12 @@
 \ MACHFORTH DEMO #1C  BEGIN WHILE REPEAT  test program
+\ DEMO shows colon definition place in the PROG: END. structure
 
-\ 9X Faster than this Forth program
-\ : DEMO1
+COMPILER  \ names space that has compiler directives
+   NEW.
+   HEX 2000 ORIGIN.
+
+\ 9X Faster than this equivalent Forth program
+\ : DEMOWHILE
 \      FFFF
 \      BEGIN
 \          1-
@@ -10,20 +15,20 @@
 \      DROP
 \ ;
 
-COMPILER  \ names space that has compiler directives
-   NEW.
-   HEX 2000 ORIGIN.
+TARGET  \ code now compiles to TARGET memory
+: DEMOWHILE
+    FFFF       \ counter -> DATA stack
+    BEGIN
+      1-       \ decrement # on top of data stack
+    WHILE      \ DUP is not needed because
+               \ WHILE does NOT consume the TOS value like standard Forth
+    REPEAT
+    DROP       \ remove number from data stack
+;
 
-TARGET    \ Makes code compile to TARGET memory
 PROG: DEMO1C
-      FFFF          \ counter -> DATA stack
-      BEGIN
-        1-          \ decrement # on top of data stack
-      WHILE         \ WHILE does NOT consume the TOS value
-      REPEAT
-      DROP          \ remove number from data stack
-
-      NEXT,         \ Return to Forth console
+      DEMOWHILE
+      NEXT,      \ Return to Forth console
 END.
 
 \ Usage from Forth command line:
