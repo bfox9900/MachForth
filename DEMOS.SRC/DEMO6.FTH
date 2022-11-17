@@ -5,7 +5,7 @@
   NEW.
   HEX 2000 ORIGIN.
 
-  OPT-ON
+  OPT-OFF
 
 COMPILER     \ use COMPILER mode for data creation and allocation
 VARIABLE X
@@ -28,7 +28,7 @@ PROG: DEMO6 ( -- address)
       46  BUFF 3 + C!
 
       BEEF Z !         \ conventional Forth syntax works
-      DEAD -> Z        \ compile symbolic addressing mode. Faster & smaller
+      DEAD [ Z !]       \ compile symbolic addressing mode. Faster & smaller
 
       NEXT,            \ return to MachForth command line
 END.                   \ end tests program size, tests for stack junk

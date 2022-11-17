@@ -7,7 +7,7 @@ COMPILER
 \ *
 \ * NOTE: Optimizer breaks some loop exit conditions by removing instructions
 \ *
-    OPT-OFF
+    OPT-ON
 
 TARGET
 VARIABLE Z
