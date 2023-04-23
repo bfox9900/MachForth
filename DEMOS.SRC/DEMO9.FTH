@@ -16,14 +16,14 @@ VARIABLE Z
 : WORD2   WORD1  X @  2/  Y ! ;
 : WORD3   WORD2  Y @  2*  Z ! ;
 
-\ *TRY these with regular -;  to see the difference.
-: WORD4   WORD3 ;  \ CAN use tail-call optimzer because last word is a call
-: WORD5   WORD4 ;
-: WORD6   WORD5 ;
-: WORD7   WORD6 ;
-: WORD8   WORD7 ;
-: WORD9   WORD8 ;
-: WORD10  WORD9 ;
+\ *TRY these with regular semi-colon to see the difference.
+: WORD4   WORD3 -;  \ We can use tail-call optimzer because last word is a call
+: WORD5   WORD4 -;
+: WORD6   WORD5 -;
+: WORD7   WORD6 -;
+: WORD8   WORD7 -;
+: WORD9   WORD8 -;
+: WORD10  WORD9 -;
 
 \ using Camel99 workspace for easy testing
 [CC] HEX
