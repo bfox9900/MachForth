@@ -32,50 +32,13 @@ VOCABULARY TARGETS   \ for words in the compiled program
 \ without using tick.
 VARIABLE XSTATE  \ CROSS-COMPILER state variable
 
-\ __________________[ pop/push optimizer ]____________________
-\ Keeping the top of stack (TOS) in register means that everytime we need
-\ a new value in the TOS we must push the current value in the TOS register.
-\ This is functionally a DUP instruction.
-\ This also means that at the end of many Forth words there is a DROP
-\ to refill the TOS register. This is one 9900 instruction. (>C136)
-\ This optimizer scheme uses DROP before DUP as a cue that TOS register
-\ is free to use and therefore the entire DROP/DUP code can be omitted.
-
 HEX
-C136 CONSTANT 'DROP'   \ 9900 machine code for DROP (*SP+ R4 MOV,)
-VARIABLE #DROPS         \ count when DROP, is executed
-VARIABLE #OPTS         \ # of optimizations made
-VARIABLE #DUPS         \ # of DUPS made
-VARIABLE TOSFREE
-
-: DUP,     ( n -- n n)  TOS PUSH, #DUPS 1+!  TOSFREE ON ;  \ normal dup
-: DROP,                 TOS POP,  #DROPS 1+! TOSFREE OFF ; \ count each drop
-
-: LOOKBACK ( -- u)  THERE 2- @ ; \ fetch previous instruction code
-
-: OPT-DUP, ( n -- n ?n)
-  #DUPS @ 0= \ SPECIAL CASE: TOS was never saved
-  IF
-       DUP,   \ force TOS save
-  ELSE \ After 1st DUP compiler always does this
-      LOOKBACK 'DROP' =     \ look back for DROP
-      IF
-         1 CELLS TALLOT     \ move target dictionary ie: erase DROP
-         #OPTS 1+!
-         TOSFREE ON
-      ELSE
-          DUP,
-      THEN
-  THEN
-;
-
-DEFER SMARTDUP,     ' DUP, IS SMARTDUP,   \ default is unoptimized
 
 XASSEMBLER DEFINITIONS
 : LIT,  ( n -- )
     XSTATE @
     IF               \ IF CROSS-compiling, emit machine code
-       SMARTDUP,     \ push TOS if we need to.
+       TOS PUSH,     \ push TOS if we need to.
        TOS SWAP LI,  \ compile n as a literal number into R4.
     THEN  ;          \ If interpreting just put n on Forth stack .
 
@@ -129,6 +92,8 @@ COMPILER
 : H:   :  ;H
 
 \ tail call optimizing semi-colon
+: LOOKBACK ( -- u)  THERE 2- @ ; \ fetch previous instruction code
+
 H: -; ( --  )
     LOOKBACK   ( addr )   \ get entry address of sub-routine
     2 CELLS +  ( addr' )  \ move past the sub-routine ENTRY instructions
@@ -200,7 +165,9 @@ H: T'   ( <name> -- addr)
 HEX
 : RUN   ( addr --)
        DUP 3000 2004 WITHIN ABORT" Can't RUN. ORG must be >2000"
-       (RUN) ;
+       (RUN) [ FORTH ] DROP ;
+
+COMPILER        
 \ _____________________________________________________________
 \ cross-compiler directives
 : (NEW)
@@ -209,9 +176,6 @@ HEX
    CDATA  ORG              \ program begins after the intial branch & address
    DEAD @@ B,              \ Compile 1ST instruction. branch to bad address
   ['] TARGETS >BODY OFF    \ erase words in TARGETS wordlist
-
-   #DROPS OFF   #OPTS OFF
-   #DUPS  OFF
 ;
 
 : ORIGIN. ( addr ) DUP 2000 U< ABORT" ORG < HEX 2000"  LORG ! ;
@@ -314,7 +278,6 @@ H: VARIABLE  ( -- addr)   CREATE     0000 T,
   CREATE !CSP
      THERE REL>TARG DUP ,  \ record program entry in this word and...
      'BOOT !               \ store relocated address in program header
-     #DUPS OFF
       ]                    \ Turn on cross-compiler
   DOES> @
 ;
@@ -322,9 +285,6 @@ H: VARIABLE  ( -- addr)   CREATE     0000 T,
 : REPORT
     DECIMAL
     CR ." Program Size  :" THERE CDATA - .
-    CR ." Optimizations :" #OPTS ?
-    CR ." #DROPS : " #DROPS ?
-    CR ." #DUPS  : " #DUPS ?
 ;
 
 : END.
@@ -364,15 +324,12 @@ HOST CR .( Forth Intrinics)
 COMPILER
 HEX
 \  Moore's Machine Forth + a few extras
-: DROP  ( n -- )  DROP,  ;
-: DUP             SMARTDUP, ;
+: DUP     TOS PUSH, ;
+: DROP    TOS POP,  ; 
 
-\ same for return stack 
-: RDROP  *RP+ R11 MOV,  ; 
-: RDUP    RP DECT,   R11 *RP MOV,  ;
-
-: OPT-OFF   ['] DUP,     IS SMARTDUP, ;
-: OPT-ON    ['] OPT-DUP, IS SMARTDUP, ;
+\ same for return stack. R11 caches the top of Return stack 
+: RDUP    R11 RPUSH, ;
+: RDROP   R11 RPOP, ; 
 
 : @     ( TOSaddr -- n) *TOS TOS MOV, ;
 
@@ -416,7 +373,7 @@ R8 CONSTANT AR
 \ For/next loop uses R8 for index. Counts down only.
 \ Use A register or TOS for upcounting
 
-: I@   ( -- n)  DUP, *RP TOS MOV, ;   \  push(T) T=I
+: I@   ( -- n)  DUP  R11 TOS MOV, ;   \  push(T) T=I
 
 
 \ *change* Uses R11 as loop index 
@@ -466,7 +423,7 @@ R8 CONSTANT AR
 : AND]  ( n [n] --n) ]  TOS SWAP ANDI, ;    \ and TOS with literal number
 
 \ Symbolic addressing operators
-: @]    ( addr -- n)  ]  SMARTDUP, ( addr) @@ TOS MOV,  ;
+: @]    ( addr -- n)  ]  DUP ( addr) @@ TOS MOV,  ;
 : !]    ( n [var] --) ]  TOS SWAP @@ MOV,  DROP  ;
 : +!]   ( n [var] --) ]  TOS SWAP @@ ADD,  DROP  ;
 : C!]   ( c [var] --) ]  TOS SWPB,  TOS SWAP @@ MOVB, DROP ;
@@ -522,7 +479,7 @@ R8 CONSTANT AR
 : ?TERMINAL ( -- )  0020 @@ BL,  NOT ; \ TI-99 ROM sub-routine
 
 : COUNT  ( Caddr -- addr len )
-        TOS PUSH,        \ !!! CANT' USE SMARTDUP, Need to make the copy
+        TOS PUSH,        \ !!! CANT' USE DUP Need to make the copy
        *SP INC,           \ inc. past the count byte
        *TOS TOS MOVB,     \ put C@ inline to save space
         TOS 8 SRL, ;
@@ -558,7 +515,7 @@ R8 CONSTANT AR
 \ so they look like ':' ';' by using Camel Forth's H: and ;H
 \ Yes it's confusing. Welcome to Forth cross-compilers.
 COMPILER
-H: :    M:  ;H
+H: :   TARGET M:  ;H
 H: ;   POSTPONE ;M   ;H IMMEDIATE
 
 \ Redefine Camel99 Utility constants as MACHFORTH constants

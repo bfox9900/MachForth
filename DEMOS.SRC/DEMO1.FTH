@@ -15,12 +15,14 @@ COMPILER  \ names space that has compiler directives
 
 TARGET
 PROG: DEMO1
-      4             \ 4  Literal numbers compile as LI TOS,n
+      FFFF            \ 4  Literal numbers compile as LI TOS,n
       BEGIN
-         1+        \ inc # on top of data stack
-        ?TERMINAL  \ test for Break key
+        1-        \ inc # on top of data stack
+ \       ?TERMINAL  \ test for Break key
       UNTIL         \ MACHINE FORTH uses native status register
       DROP          \ remove number from data stack
+
+
       NEXT,         \ Return to Forth console
 END.
 
