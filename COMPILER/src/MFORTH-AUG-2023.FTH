@@ -165,7 +165,7 @@ H: T'   ( <name> -- addr)
 HEX
 : RUN   ( addr --)
        DUP 3000 2004 WITHIN ABORT" Can't RUN. ORG must be >2000"
-       (RUN) [ FORTH ] DROP ;
+       (RUN) [ FORTH ]  DROP ;
 
 COMPILER        
 \ _____________________________________________________________
@@ -303,7 +303,7 @@ COMPILER
 : <BACK   ( addr addr' -- ) TUCK -  RESOLVE ;
 
 : -IF    ( -- $$)   THERE 0 JOC, ;
-: IF     ( -- $$)   THERE 0 JNC, ;
+: IF     ( -- $$)   THERE 0 JEQ, ;
 : THEN   ( addr --) THERE OVER - RESOLVE ;
 : ELSE   ( -- $$ )  THERE 0 JMP,  SWAP THEN ;
 
@@ -355,7 +355,7 @@ R8 CONSTANT AR
 : !A+     TOS  AR *+ MOV,      DROP ;
 : A!      TOS  AR    MOV,      DROP ;
 : !A      TOS  AR ** MOV,      DROP ;
-: C!A     TOS SWPB,  TOS  AR ** MOVB,  DROP, ;
+: C!A     TOS SWPB,  TOS  AR ** MOVB,  DROP ;
 
 \ useful addition
 : A+!     TOS AR ADD,   DROP ;

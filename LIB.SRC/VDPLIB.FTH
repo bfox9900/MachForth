@@ -13,7 +13,7 @@ CODE VDPA! ( Vaddr -- )   \ set vdp address (read mode)
        0 LIMI,
        9 R1 () VDPWA @@ MOVB,  \ write oddddyte from TOS (ie: R4)
        TOS     VDPWA @@ MOVB,  \ MOV writes the even byte to the port address
-       TOS DPOP,
+       TOS POP,
 ENDCODE
 
 CODE VC@    ( addr -- c)
@@ -32,7 +32,7 @@ CODE VC! ( c Vaddr -- )
        0 LIMI,
        9 R1 () VDPWA @@ MOVB,  \ write odd byte from TOS (ie: R4)
        TOS     VDPWA @@ MOVB,  \ MOV writes the even byte to the port address
-       TOS DPOP,
+       TOS POP,
        9 R1 () VDPWD @@ MOVB,  \ Odd byte R4, write to screen
        \ 2 LIMI,
        DROP                    \ refill TOS
@@ -62,8 +62,8 @@ HEX
 
 : VREAD ( Vaddr addr n --)
          [ TOS R0 MOV,
-           *SP+ R5 MOV,  \ R5 = addr
-           *SP+ TOS MOV,
+           R5 POP,  \ R5 = addr
+           TOS POP, \ tos= Vaddr 
          ]
            VDPA!         \ TOS is refilled after this call
          [ BEGIN

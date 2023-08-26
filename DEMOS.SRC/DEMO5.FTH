@@ -8,7 +8,6 @@
 \ declare a constant in COMPILER space.
 -3 CONSTANT K
 
-  OPT-OFF
 \ Operators                OPT-ON    Bytes   OPT-OFF  Bytes
 \ ------------            ---------  ----- |  -------  -----
 \ Normal   ! and +!      12.30 secs    82  |   15.56    94

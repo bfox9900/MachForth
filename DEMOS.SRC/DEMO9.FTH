@@ -4,7 +4,7 @@ COMPILER
 
    NEW.
    HEX 2000 ORIGIN.
-  OPT-OFF
+ \ OPT-OFF
 
 TARGET
 VARIABLE X
@@ -29,7 +29,7 @@ VARIABLE Z
 [CC] HEX
 TARGET
 PROG: DEMO9
-         FFFF FOR
+         400 FOR
            I@ WORD10   \ return stack holds the loop index
          NEXT
 

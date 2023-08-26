@@ -16,7 +16,6 @@ PROG: DEMO7
         ?TERMINAL   \ loops until FNCT 4 is pressed
       UNTIL
       DROP          \ clean the stack
-      BYE
 
       NEXT,
 END.
