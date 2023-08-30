@@ -9,7 +9,6 @@ INCLUDE DSK2.STDLIB
 COMPILER
 CREATE TITLE$  S" Signed  Un-signed" S,
 
-OPT-OFF
 DECIMAL         \ compiler interprets numbers as BASE 10
 
 TARGET

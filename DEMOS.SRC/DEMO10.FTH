@@ -52,9 +52,9 @@ PROG: DEMO10
         43 FILLSCREEN
         WAIT
         BL 1+ 
-        5F 
+       FFFF
         FOR  
-        \  DUP FILLSCREEN   
+          R@ DROP 
           1+ 
         NEXT 
         DROP 

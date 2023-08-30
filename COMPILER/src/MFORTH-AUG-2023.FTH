@@ -301,21 +301,33 @@ COMPILER
 \ compute signed offset & compile into the 2nd byte of any 9900 JUMP instruction
 : RESOLVE ( addrofjmp byte --)  2- 2/ SWAP 1+ C! ;
 : <BACK   ( addr addr' -- ) TUCK -  RESOLVE ;
+\ synonyms from Assembler 
+: IF     IF, ; 
+: THEN   ENDIF, ; 
+: ELSE   ELSE, ; 
+: BEGIN  BEGIN, ; 
+: WHILE  WHILE, ;
+: AGAIN  AGAIN, ; 
+: UNTIL  UNTIL, ; 
+: REPEAT REPEAT, ; 
 
+\ aliases for Assembler jump tokens 
+\ This is NOT conventional Forth. This is 9900 specific
+: =      EQ ;
+: <>     NE ; 
+: <      LTE ;
+: >      GTE ;
+: U>     LO ;
+: U<     HI ;
+: U>=    HE ;
+: U<=    LE ;
+
+: 0=     TOS 0 CI,  = ;
+
+\ From original Machine Forth 
 : -IF    ( -- $$)   THERE 0 JOC, ;
-: IF     ( -- $$)   THERE 0 JEQ, ;
-: THEN   ( addr --) THERE OVER - RESOLVE ;
-: ELSE   ( -- $$ )  THERE 0 JMP,  SWAP THEN ;
-
-: BEGIN    THERE ; 
-: WHILE    IF  SWAP ;
 : -WHILE   -IF SWAP ;
-
-: UNTIL   ( addr --)  THERE 0 JNE, <BACK ;
-: -UNTIL  ( addr --) -IF <BACK ;
-: AGAIN   ( addr --) THERE  0 JMP, <BACK ;
-: REPEAT  ( addr -- ) AGAIN THEN ;
-
+: -UNTIL  ( addr --) -IF <BACK ;  \ used in FOR/NEXT 
 : OV.UNTIL ( addr --) THERE  0 JNO, <BACK  ; \ Used by DO/LOOP
 
 \ ______________________________________________________________
@@ -364,16 +376,14 @@ R8 CONSTANT AR
 \ return stack operators ........................
 \ *simplified* If you want more use Assembler 
 : DUP>R   RDUP  TOS R11 MOV, ;        \ BFOX addition 
-: >R      DUP>R DROP ;                \ push TOS onto Rstack ie: >R ;
-: R>      DUP   R11 TOS MOV,  RDROP ; \ pop rstack into TOS  ie: R> ;
+: >R      DUP>R DROP ;                \ push TOS onto Rstack ;
+: R>      DUP   R11 TOS MOV,  RDROP ; \ pop Rstack onto TOS  ;
 
 : @R+     DUP   *R11+ TOS MOV, ;
 : !R+     RDUP  TOS *R11+ MOV, ;
 
-\ For/next loop uses R8 for index. Counts down only.
-\ Use A register or TOS for upcounting
-
-: I@   ( -- n)  DUP  R11 TOS MOV, ;   \  push(T) T=I
+\ get top of Rstack onto TOS non-destructive
+: R@   ( -- n)  DUP  R11 TOS MOV, ;   \  push(T) T=I
 
 
 \ *change* Uses R11 as loop index 
@@ -484,20 +494,19 @@ R8 CONSTANT AR
        *TOS TOS MOVB,     \ put C@ inline to save space
         TOS 8 SRL, ;
 
-\ Comparisons only change the carry flag
-: OVER=  ( n n -- ?)  *SP+ TOS CMP, ;
 
-: =?     ( n --n)  R5 CLR,  NE  IF,  R5 DEC, ENDIF, ;
-: >?     ( n --n)  R5 CLR,  LTE IF,  R5 DEC, ENDIF, ;
-: <?     ( n --n)  R5 CLR,  GTE IF,  R5 DEC, ENDIF, ;
+\ compare TOS to a literal number 
+: #=]  ( n lit -- n)  TOS  SWAP CI, EQ ;
+: #<>] ( n lit -- n)  TOS  SWAP CI, NE ;
 
-: 0=     ( n -- n) TOS R5 MOV, R5 DEC, ;
-: =      ( n1 n2 -- ?)  OVER= =? ;
-\ signed comparisons
-: >   ( n n2 -- n)  OVER=  >? ;  \ goto then low or eq
-: <   ( n n2 -- n)  OVER=  <? ;
 
-: OVER=] ( n lit -- n)  TOS  SWAP CI, =? ;
+\ EQUIVALENTS for conventional Forth stack comparisons.
+\ These still use the status register 
+: [0>]     *SP+ TOS CMP, > ;
+: [O<]     *SP+ TOS CMP, < ;
+: [U>]     *SP+ TOS CMP, U< ;
+: [U<]     *SP+ TOS CMP, U< ;
+
 
 \ ANS Forth number compilers for the COMPILER wordlist
 
@@ -535,8 +544,9 @@ HEX
         WARM
         INIT-WORDLISTS
         E4 7 VWTR
-        PAGE ." MachForth Compiler V0.EXP 24AUG23"
-        CR ."  RStack cached in R11"
+        PAGE ." MachForth Compiler V2.61 30AUG23"
+        CR   ." -RStack cached in R11"
+        CR   ." -Explict comparison operators" 
         COMPILER
         NEW.
         ABORT ;

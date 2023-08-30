@@ -14,14 +14,38 @@ COMPILER  \ names space that has compiler directives
    HEX 2000 ORIGIN.
 
 TARGET
-PROG: DEMO1
+: NOTUNTIL 
       FFFF            \ 4  Literal numbers compile as LI TOS,n
       BEGIN
-        1-        \ inc # on top of data stack
- \       ?TERMINAL  \ test for Break key
-      UNTIL         \ MACHINE FORTH uses native status register
+        1-        \ dec # on top of data stack
+      -UNTIL         \ MACHINE FORTH's "not until" operator
       DROP          \ remove number from data stack
+;
 
+: REGUNTIL 
+      FFFF           \ 4  Literal numbers compile as LI TOS,n
+      BEGIN
+        1-           \ dec # on top of data stack
+      = UNTIL        \ UNTIL must use a comparison operator 
+                     \ loop until STATUS REGISTER EQ flag is set  
+      DROP           \ remove number from data stack
+;
+
+: TOSUNTIL  
+      FFFF           \ 4  Literal numbers compile as LI TOS,n
+      BEGIN
+        1-           \ dec # on top of data stack
+      0= UNTIL       \ UNTIL must use a comparison operator 
+                     \ loop until TOS = 0 
+      DROP           \ remove number from data stack
+;
+
+
+PROG: DEMO1
+
+      NOTUNTIL 
+      REGUNTIL 
+      TOSUNTIL 
 
       NEXT,         \ Return to Forth console
 END.
