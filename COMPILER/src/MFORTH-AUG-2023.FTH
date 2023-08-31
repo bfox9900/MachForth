@@ -207,8 +207,7 @@ H: S"  ( -- addr len)  [CHAR] " PARSE ;H
 : ?RUN-TARGET    XSTATE @ 0= ABORT" Can't run TARGET word" ;
 
 H: CODE
-       CREATE
-       ALSO XASSEMBLER
+TARGET CREATE            \ word goes into TARGETS wordlist  
          !CSP
          THERE ,
          R11 RPUSH,      \ automatically add saving R11 on entry
@@ -220,7 +219,7 @@ H: ENDCODE  ( -- )
         R11 RPOP,        \ automatic R11 restore on exit
         RT,
         ?CSP
-        PREVIOUS
+       COMPILER          \ return to COMPILER search order 
 ;H
 
 \ ______________________________________________________________
@@ -313,7 +312,8 @@ COMPILER
 : REPEAT REPEAT, ; 
 
 \ aliases for Assembler jump tokens 
-\ This is NOT conventional Forth. This is 9900 specific
+\ This is NOT conventional Forth. 
+\ These work just like the TI-fORTH Assembler but with different names 
 : =      EQ ;
 : <>     NE ; 
 : <      LTE ;
@@ -323,13 +323,16 @@ COMPILER
 : U>=    HE ;
 : U<=    LE ;
 
+\ hard comparison of TOS to zero 
 : 0=     TOS 0 CI,  = ;
 
 \ From original Machine Forth 
-: -IF    ( -- $$)   THERE 0 JOC, ;
+: -IF    ( -- $$)   THERE 0 JOC, ; 
 : -WHILE   -IF SWAP ;
 : -UNTIL  ( addr --) -IF <BACK ;  \ used in FOR/NEXT 
-: OV.UNTIL ( addr --) THERE  0 JNO, <BACK  ; \ Used by DO/LOOP
+
+\ Used by DO/LOOP
+: OV.UNTIL ( addr --) THERE  0 JNO, <BACK  ; 
 
 \ ______________________________________________________________
 HOST CR .( Forth Intrinics)

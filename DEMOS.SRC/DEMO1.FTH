@@ -1,8 +1,8 @@
 \ MFORTH DEMO #1  Minimal program in MachForth    Aug 2023 
 
 \ Uses  HOST Forth workspace and stacks
-\ This allows using the RUN command to run DEMO1 without leaving MachForth.
-\ If running on Classic99 you will see R4 counting up and rolling over.
+\ We can use the RUN command to run DEMO1 without leaving MachForth.
+\ If running on Classic99 you will see R4 counting down quickly
 
 COMPILER            \ names space that has compiler directives
 
@@ -20,5 +20,7 @@ PROG: DEMO1
     NEXT,           \ HOST Forth's NEXT routine gets us back to Forth
 END. 
 
-\ Usage from Forth command line:
+\ Usage from Forth command line.  
+\ We need the TARGET directive so MACHFORTH can find the word DEMO1
+
 \ TARGET DEMO1 RUN
