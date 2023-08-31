@@ -5,9 +5,7 @@ COMPILER
    HEX
    NEW.
    2000 ORIGIN.
-   OPT-ON
 
-TARGET
 PROG: DEMO1D      ( 1.2 seconds run time )
        0          \ Put zero on the data stack
        FFFF       \ loop limit goes to TOS register
@@ -18,4 +16,4 @@ PROG: DEMO1D      ( 1.2 seconds run time )
        NEXT,      \ Return to Forth
 END.
 
-\ DEMO1D RUN
+\ TARGET DEMO1D RUN

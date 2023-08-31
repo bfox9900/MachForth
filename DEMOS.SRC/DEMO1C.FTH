@@ -15,12 +15,11 @@ COMPILER  \ names space that has compiler directives
 \      DROP
 \ ;
 
-TARGET  \ code now compiles to TARGET memory
 : DEMOWHILE
     FFFF       \ counter -> DATA stack
     BEGIN
       1-       \ decrement # on top of data stack
-    WHILE      \ DUP is not needed because
+    <> WHILE   \ DUP is not needed because
                \ WHILE does NOT consume the TOS value like standard Forth
     REPEAT
     DROP       \ remove number from data stack
@@ -32,4 +31,4 @@ PROG: DEMO1C
 END.
 
 \ Usage from Forth command line:
-\ DEMO1C RUN
+\ TARGET DEMO1C RUN

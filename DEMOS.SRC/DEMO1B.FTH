@@ -9,8 +9,6 @@
 \  6. Demonstrate turning compiler on or off inside the code
 \  5. Save a finished program that can RUN from E/A Option 5
 
-\  *** PRESS FCTN 4 to return to title screen *** 
-
 COMPILER
    HEX
    NEW.
