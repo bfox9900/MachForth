@@ -63,15 +63,14 @@ DECIMAL
       GRAPHICS
       42 4 0 0 SPRITE0
       1 MAGNIFY
-      OPT-OFF
       VDPWA A!
       100 FOR
         \ using TOS for up counting
         0   239 FOR DUP 0SP.X! 1+   NEXT DROP
         0   175 FOR DUP 0SP.Y! 1+   NEXT DROP
         \ for/next index is a down-counter
-            239 FOR  I@ 0SP.X!      NEXT
-            175 FOR  I@ 0SP.Y!      NEXT
+            239 FOR  R@ 0SP.X!      NEXT
+            175 FOR  R@ 0SP.Y!      NEXT
       NEXT
       BYE
 END.

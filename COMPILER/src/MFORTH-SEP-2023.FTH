@@ -147,7 +147,12 @@ CDATA CELL+ CONSTANT 'BOOT  \ holds program boot address
 \ run the program at target memory
 \ **** MUST USE MACHINE CODE. Xassembler compiles to target mem! ***
 HEX
+\ branch to PROG: routine 
 CODE (RUN)  ( addr -- ) 0454 , C136 ,   NEXT,  ENDCODE \  *TOS B,
+
+\ BL to any sub-routine in the system & return to Forth 
+\                     *TOS BL,  
+CODE CALL  ( addr -- ) 0694 ,    NEXT,  ENDCODE 
 
 \ save binary program utility
 INCLUDE DSK2.SAVEIMG
@@ -164,23 +169,57 @@ H: T'   ( <name> -- addr)
           PREVIOUS ;H
 HEX
 : RUN   ( addr --)
-       DUP 3000 2004 WITHIN ABORT" Can't RUN. ORG must be >2000"
+       DUP 3FF8 2004 WITHIN 
+       ABORT" Can't RUN. Address must be low RAM"
        (RUN) [ FORTH ]  DROP ;
 
 COMPILER        
 \ _____________________________________________________________
-\ cross-compiler directives
+\                  cross-compiler directives
+
+\ setup words 
+\ CALLS  the entry word 
+\ ______________________________________________________________
+\ Forth virtual machine setup directives
+
+: WORKSPACE ( addr --) LWPI, ;        \ Forth workspace
+: DSTACK    ( addr --) SP SWAP LI, ;  \ data stack
+: RSTACK    ( addr --) RP SWAP LI, ;  \ return stack
+
+: PROG: ( <label> -- taddr)
+  CREATE !CSP
+     THERE REL>TARG DUP ,  \ record program entry in this word and...
+     'BOOT !               \ store relocated address in program header
+      ]                    \ Turn on cross-compiler
+  DOES> @
+;
+
+: REPORT
+    DECIMAL
+    CR ." Program Size  :" THERE CDATA - .
+;
+
+: END.
+        POSTPONE [  \ turn CROSS-compiler off
+        TDP @ 3FFF > ABORT" Prog > 8K"
+        ?CSP
+        REPORT
+;
+
 : (NEW)
    1000  2000  0 VFILL     \ erase VDP RAM 8K block
    CDATA 2000 FF FILL      \ fill 8K program space with FFFF
    CDATA  ORG              \ program begins after the intial branch & address
+
    DEAD @@ B,              \ Compile 1ST instruction. branch to bad address
+
   ['] TARGETS >BODY OFF    \ erase words in TARGETS wordlist
 ;
 
+
 : ORIGIN. ( addr ) DUP 2000 U< ABORT" ORG < HEX 2000"  LORG ! ;
 
-: EVEN.   TDP @ ALIGNED TDP ! ;
+: EVEN.      TDP @ ALIGNED TDP ! ;
 
 \ target image fetch and store take relocated addresses and convert them
 : T!      ( n relocated -- ) REL>TARG ! ;
@@ -234,11 +273,11 @@ H: M:
            R11 RPUSH,   \ compile "enter sub-routine" code
            ]            \ turn on "cross-compiler"
  \ Runtime action: (when we invoke this word)
-         DOES> ?RUN-TARGET
-              @ XSTATE @ IF REL>TARG ( addr) @@ BL, THEN
+         DOES> @  
+              XSTATE @ IF REL>TARG ( addr) @@ BL, THEN
 ;H
 
-H: ;M     R11 RPOP,  RT,    \ compile exit sub-routine code
+H: ;M     R11 RPOP,  RT,    \ compile the exit/return code
           POSTPONE [        \ turn off cross compiler
 ;H IMMEDIATE
 
@@ -256,43 +295,27 @@ H: EQU   ( n -- <NAME>) CREATE  ,  DOES> @ ; \ just give the compiler the value
 
 H: CONSTANT ( n -- n)  \ CONSTANT compiles code to put no. in TOS
       CREATE   ,       \ remember n
-      DOES> ( pfa ) @ XSTATE @ IF  LIT, THEN  ;H
+      DOES> ( pfa ) @  LIT,  ;H
 
 \ *****************************************************
 \ >> CREATE is OVER-RIDDEN for the CROSS-COMPILER <<
 H: CREATE ( -- addr)
       CREATE THERE REL>TARG ,     \ remember the target address
-      DOES> ( pfa) @  LIT, 
+      DOES> ( pfa) @   LIT, 
 ;H
 
 \ mforth data structure words
-H: VARIABLE  ( -- addr)   CREATE     0000 T,   ;H
-\ ______________________________________________________________
-\ Forth virtual machine setup directives
-: WORKSPACE ( addr --) LWPI, ;        \ Forth workspace
-: DSTACK    ( addr --) SP SWAP LI, ;  \ data stack
-: RSTACK    ( addr --) RP SWAP LI, ;  \ return stack
-
-: PROG: ( <label> -- taddr)
-  TARGET 
-  CREATE !CSP
-     THERE REL>TARG DUP ,  \ record program entry in this word and...
-     'BOOT !               \ store relocated address in program header
-      ]                    \ Turn on cross-compiler
-  DOES> @
-;
+H: VARIABLE  ( -- addr)   CREATE     0000 T,  ;H
 
 : REPORT
     DECIMAL
     CR ." Program Size  :" THERE CDATA - .
-    THERE 3FFE > ABORT" Prog > 8K"
 ;
 
+\ END. is now optional but it gives you a report 
 : END.
-      POSTPONE [  \ turn CROSS-compiler off
-       ?CSP
-      REPORT
-      COMPILER 
+        TDP @ 3FFF > ABORT" Prog > 8K"
+        REPORT
 ; IMMEDIATE
 
 \ _________________________________________________
@@ -526,7 +549,7 @@ R8 CONSTANT AR
 \ Yes it's confusing. Welcome to Forth cross-compilers.
 COMPILER
 H: :   TARGET M:  ;H
-H: ;   POSTPONE ;M  COMPILER ;H IMMEDIATE
+H: ;   POSTPONE ;M   ;H IMMEDIATE
 
 \ Redefine Camel99 Utility constants as MACHFORTH constants
 HEX
@@ -545,9 +568,10 @@ HEX
         WARM
         INIT-WORDLISTS
         E4 7 VWTR
-        PAGE ." MachForth Compiler V2.61 30AUG23"
+        PAGE ." MachForth Compiler V2.7 1SEP23"
         CR   ." -RStack cached in R11"
         CR   ." -Explict comparison operators" 
+        CR   ." PROG:  is removed "
         COMPILER
         NEW.
         ABORT ;

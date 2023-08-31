@@ -11,7 +11,7 @@
 
 COMPILER  \ names space that has compiler directives
    NEW.
-   HEX 2000 ORIGIN.
+   HEX A000 ORIGIN.
 
 TARGET
 : NOTUNTIL 
@@ -21,34 +21,26 @@ TARGET
       -UNTIL         \ MACHINE FORTH's "not until" operator
       DROP          \ remove number from data stack
 ;
-
-: REGUNTIL 
-      FFFF           \ 4  Literal numbers compile as LI TOS,n
-      BEGIN
-        1-           \ dec # on top of data stack
-      = UNTIL        \ UNTIL must use a comparison operator 
-                     \ loop until STATUS REGISTER EQ flag is set  
-      DROP           \ remove number from data stack
+ 
+: BYE
+  [  0 LIMI,
+     83C4 @@ CLR,
+     0000 @@ BLWP, ]
 ;
-
-: TOSUNTIL  
-      FFFF           \ 4  Literal numbers compile as LI TOS,n
-      BEGIN
-        1-           \ dec # on top of data stack
-      0= UNTIL       \ UNTIL must use a comparison operator 
-                     \ loop until TOS = 0 
-      DROP           \ remove number from data stack
-;
-
 
 PROG: DEMO1
+   [ 8300 WORKSPACE 
+    4000 DSTACK 
+    3FF0 RSTACK ]
 
       NOTUNTIL 
       REGUNTIL 
       TOSUNTIL 
 
-      NEXT,         \ Return to Forth console
-END.
+      BYE
+END. 
+
+DEMO1 SAVE DSK2.DEMO1
 
 \ Usage from Forth command line:
 \ DEMO1 RUN
