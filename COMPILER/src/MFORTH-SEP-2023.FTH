@@ -128,6 +128,7 @@ H: WORDS      WORDS  ;H
 H: ELAPSE     ELAPSE ;H  \ make available in MFORTH vocabulary.
 H: .S         .S    ;H
 H: CLS        PAGE  ;H   \ don't conflict with compiler PAGE
+H: COLD       COLD  ;H
 
 \ COMPILER  COLON is the just the Host forth's colon
 H: ;     POSTPONE ;  ;H  IMMEDIATE
@@ -424,8 +425,6 @@ PREVIOUS DEFINITIONS
 : 4*   ( n -- n')   TOS 2 SLA, ;
 : 8*   ( n -- n')   TOS 3 SLA, ;
 
-: LSHIFT ( n -- n)  TOS SWAP SLA, ;
-: RSHIFT ( n -- n)  TOS SWAP SRL, ;
 
 \ inc/dec variables with direct addressing
 : 1+! ( addr -- ) *TOS  INC,  DROP ;
@@ -480,6 +479,12 @@ PREVIOUS DEFINITIONS
 
 \ BEEF  13 [ Q +]!
 : +]!   ( n i addr -- )  *SP+ SWAP (TOS) MOV, DROP ;
+
+\ instructions that require numbers compiled into the code 
+\ These words in conventional Forth require 10 bytes each!
+: LSHIFT] ( n -- n)  TOS SWAP SLA, ;
+: RSHIFT] ( n -- n)  TOS SWAP SRL, ;
+
 
 \ _______________________________________________________________
 \ 2 and 3 instruction words for ANS/ISO compatibility
@@ -564,7 +569,7 @@ HEX
       WARM
       INIT-WORDLISTS
       E4 7 VWTR
-      PAGE ." MachForth Compiler V2.7 1SEP23"
+      PAGE ." MachForth Compiler V2.7 2SEP23"
       COMPILER
       NEW.
       ABORT ;
