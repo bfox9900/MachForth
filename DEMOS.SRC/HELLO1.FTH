@@ -4,8 +4,7 @@
 COMPILER              \ Use compiler wordlist (for interpreted words)
    NEW.
    HEX A000 ORIGIN.
-   OPT-OFF
-
+ 
 \ equates and constants must be defined in COMPILER space
 \ They don't generate code until they are used
 HEX
@@ -30,4 +29,4 @@ PROG: MAIN
 	  BEGIN AGAIN       \ loop forever
 END.
 
-COMPILER SAVE DSK2.HELLO3
+COMPILER SAVE DSK2.HELLO1

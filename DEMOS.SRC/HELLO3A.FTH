@@ -4,7 +4,6 @@
 COMPILER             \ Use compiler wordlist (for interpreted words)
    NEW.              \ clear the memory spaces
    HEX A000 ORIGIN.
-   OPT-ON
 
 \ constants must be defined in COMPILER space
 \ They don't generate code until they are used
