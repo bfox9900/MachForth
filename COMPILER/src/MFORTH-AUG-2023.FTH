@@ -33,14 +33,14 @@ VOCABULARY TARGETS   \ for words in the compiled program
 VARIABLE XSTATE  \ CROSS-COMPILER state variable
 
 HEX
-
 XASSEMBLER DEFINITIONS
-: LIT,  ( n -- )
-    XSTATE @
+
+: LIT,  ( n -- )  \ If interpreting just put n on Forth stack.
+    XSTATE @         
     IF               \ IF CROSS-compiling, emit machine code
-       TOS PUSH,     \ push TOS if we need to.
-       TOS SWAP LI,  \ compile n as a literal number into R4.
-    THEN  ;          \ If interpreting just put n on Forth stack .
+      TOS PUSH,  
+      TOS SWAP LI,   \ compile n as a literal number into R4.
+    THEN  ;         
 
 ONLY FORTH DEFINITIONS ALSO XASSEMBLER
 : <MFINTERP> ( c-addr u -- ) \ machforth compiler interpret loop
@@ -219,7 +219,6 @@ H: ENDCODE  ( -- )
         R11 RPOP,        \ automatic R11 restore on exit
         RT,
         ?CSP
-       COMPILER          \ return to COMPILER search order 
 ;H
 
 \ ______________________________________________________________
@@ -247,25 +246,26 @@ H: ;M     R11 RPOP,  RT,    \ compile exit sub-routine code
 \ or just return an address or a value to the Host Forth stock
 
 COMPILER
-\ Label creator returns relocated TARGET address when executed
-H: L:  CREATE   THERE REL>TARG ,
-       DOES>  @  ;H
-
-H: EQU   ( n -- <NAME>) CREATE  ,  DOES> @ ; \ just give the compiler the value
+H: EQU   ( n -- <NAME>) CREATE  COMPILER ,  DOES> @ ; \ just give the compiler the value
 
 H: CONSTANT ( n -- n)  \ CONSTANT compiles code to put no. in TOS
-      CREATE   ,       \ remember n
-      DOES> ( pfa ) @ XSTATE @ IF  LIT, THEN  ;H
+   CREATE   ,       \ remember n
+   DOES> ( pfa ) @  LIT,  ;H
 
-\ *****************************************************
-\ >> CREATE is OVER-RIDDEN for the CROSS-COMPILER <<
-H: CREATE ( -- addr)
-      CREATE THERE REL>TARG ,     \ remember the target address
-      DOES> ( pfa) @  LIT, 
-;H
+\ LABEL CREATE and VARIABLE put their names in the TARGETS wordlist 
+
+\ Label creator returns relocated TARGET address when executed
+H: L:   CREATE    THERE REL>TARG ,    DOES>  @  ;H
+
+H: CREATE ( -- addr) 
+      CREATE  
+       THERE REL>TARG ,  
+      DOES> @  LIT, ;H
 
 \ mforth data structure words
-H: VARIABLE  ( -- addr)   CREATE     0000 T,   ;H
+H: VARIABLE  ( -- addr) CREATE     0000 T,   ;H
+
+
 \ ______________________________________________________________
 \ Forth virtual machine setup directives
 : WORKSPACE ( addr --) LWPI, ;        \ Forth workspace
@@ -289,9 +289,8 @@ H: VARIABLE  ( -- addr)   CREATE     0000 T,   ;H
 
 : END.
       POSTPONE [  \ turn CROSS-compiler off
-       ?CSP
+      ?CSP
       REPORT
-      COMPILER 
 ; IMMEDIATE
 
 \ _________________________________________________
@@ -363,18 +362,20 @@ HEX
 : XOR   ( n n -- n)  *SP+ TOS XOR, ;   \ (option 1)
 : +     ( n n -- n)  *SP+ TOS ADD, ;   \ (option 1) add on stack
 
-\ A register per F21 instruction set
-R8 CONSTANT AR 
-: A       TOS PUSH,    AR    TOS MOV, ;
-: @A+     TOS PUSH,    AR *+ TOS MOV, ;
-: @A      TOS PUSH,    AR ** TOS MOV, ;
-: !A+     TOS  AR *+ MOV,      DROP ;
-: A!      TOS  AR    MOV,      DROP ;
-: !A      TOS  AR ** MOV,      DROP ;
-: C!A     TOS SWPB,  TOS  AR ** MOVB,  DROP ;
+\ A register per F21 instruction set will use the W register
+: A       DUP    W    TOS MOV, ;
+: A!      TOS  W  MOV,  DROP ;
+
+: @A+     DUP    W *+ TOS MOV, ;
+: @A      DUP    W ** TOS MOV, ;
+
+: !A+     TOS *W+ MOV,  DROP ;
+: !A      TOS  *W MOV,  DROP ;
+: C!A     TOS SWPB,  TOS *W MOVB,  DROP ;
+: C!A+    TOS SWPB,  TOS *W+ MOVB, DROP ;
 
 \ useful addition
-: A+!     TOS AR ADD,   DROP ;
+: A+!     TOS W ADD,   DROP ;
 
 .( .)
 \ return stack operators ........................
@@ -391,14 +392,14 @@ R8 CONSTANT AR
 
 
 \ *change* Uses R11 as loop index 
-: FOR  ( n --) >R   BEGIN ;
+: FOR  ( n --) >R BEGIN ;
 : NEXT ( -- )  R11 DEC,   -UNTIL  RDROP ;
 : NEXT2 ( -- ) R11 DECT,  -UNTIL  RDROP ;
 
 \ __________[ Chuck Moore Machine Forth Ends ]__________
 
 \ /////// ANS/ISO Forth, 9900 Specific operators \\\\\\\\
-: OVER  ( n1 n2 -- n1 n2 n1) TOS PUSH,  2 (SP) TOS MOV, ;
+: OVER  ( n1 n2 -- n1 n2 n1) DUP   2 (SP) TOS MOV, ;
 : NIP   ( n1 n2 -- n2)  SP INCT, ;
 
 \ __[ Unique TMS9900 primitives ]__
@@ -514,9 +515,9 @@ R8 CONSTANT AR
 
 \ ANS Forth number compilers for the COMPILER wordlist
 
-\ 'DP holds the address of the VARIABLE DP which is defined
+\ 'DP holds the address of the VARIABLE DP which is defF: PROGined
 \ 0 VALUE 'DP \ pointer to Machine Forth memory pointer
-\ : HERE   'DP @ @ LIT, ;   \ double fetch gets variable then value
+: HERE   THERE  LIT, ;   \ double fetch gets variable then value
 : ,     ( n --) T, ;
 : C,    ( c --) TC, ;
 : ALLOT ( n --) TALLOT ;
@@ -529,7 +530,7 @@ R8 CONSTANT AR
 \ Yes it's confusing. Welcome to Forth cross-compilers.
 COMPILER
 H: :   TARGET M:  ;H
-H: ;   POSTPONE ;M  COMPILER ;H IMMEDIATE
+H: ;   POSTPONE ;M   ;H IMMEDIATE
 
 \ Redefine Camel99 Utility constants as MACHFORTH constants
 HEX
@@ -539,21 +540,22 @@ HEX
    8300 CONSTANT WKSP0  \ default workspace for programs
 
 ALSO FORTH DEFINITIONS
-: NEW.  (NEW)
-        ['] WKSP0 CFA>NFA ['] MFORTH >BODY ! ;
+: NEW.  
+    (NEW)
+    ['] WKSP0 CFA>NFA ['] MFORTH >BODY ! ;
 
 HOST
 HEX
  : MACHFORTH
-        WARM
-        INIT-WORDLISTS
-        E4 7 VWTR
-        PAGE ." MachForth Compiler V2.61 30AUG23"
-        CR   ." -RStack cached in R11"
-        CR   ." -Explict comparison operators" 
-        COMPILER
-        NEW.
-        ABORT ;
+      WARM
+      INIT-WORDLISTS
+      E4 7 VWTR
+      PAGE ." MachForth Compiler V2.61 30AUG23"
+\      CR   ." -RStack cached in R11"
+\      CR   ." -Explict comparison operators" 
+      COMPILER
+      NEW.
+      ABORT ;
 
  LOCK
 

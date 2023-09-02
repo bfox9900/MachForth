@@ -31,9 +31,6 @@ VARIABLE X
                            \ R11 is the TOP of return stack cache
       NEXT ;
 
-\ FORTH syntax fetch and store 5 seconds
-\ symbolic addressing 4 seconds
-\ Inline ASM 1.5 seconds
 PROG: DEMO1E
 
       LOOP1

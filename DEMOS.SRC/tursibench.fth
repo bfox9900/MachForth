@@ -35,8 +35,8 @@ CODE 0SP.X! ( c -- )
        R1 STWP,                \ avoids 2 SWPB instructions
        R2 4301 LI,
        0 LIMI,
-       5 R1 () AR ** MOVB,  \ write odd byte from R2
-       R2      AR ** MOVB,  \ write even byte
+       5 R1 () W ** MOVB,  \ write odd byte from R2
+       R2      W ** MOVB,  \ write even byte
        9 R1 () VDPWD @@ MOVB,  \ Odd byte R4, write to screen
        TOS DPOP,
 ENDCODE
@@ -45,8 +45,8 @@ CODE 0SP.Y! ( c -- )
        R1 STWP,                \ avoids 2 SWPB instructions
        R2 4300 LI,
        0 LIMI,
-       5 R1 () AR ** MOVB,  \ write odd byte from R2
-       R2      AR ** MOVB,  \ write even byte
+       5 R1 () W ** MOVB,  \ write odd byte from R2
+       R2      W ** MOVB,  \ write even byte
        9 R1 () VDPWD @@ MOVB,  \ Odd byte R4, write to screen
        TOS DPOP,
 ENDCODE

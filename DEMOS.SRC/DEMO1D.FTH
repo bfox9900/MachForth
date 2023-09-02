@@ -1,5 +1,6 @@
-\ MFORTH DEMO1D  DOWN counting FOR/NEXT with incrementing TOS
+\ MFORTH DEMO1D,  DOWN counting FOR/NEXT loop with incrementing TOS
 
+\ * In Classi99 debuggger you see R11 (top of return stack ) decrementing 
 
 COMPILER
    HEX

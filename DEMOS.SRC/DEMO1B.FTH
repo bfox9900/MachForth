@@ -21,15 +21,17 @@ CODE BYE
    0000 @@ BLWP, 
 ENDCODE 
 
-( this loop completes in ~500mS)
+( this loop completes in ~600mS)
 PROG: DEMO1
    [ ( switch to interpret mode, because these are assembler macros )
+   HEX 
       8300 WORKSPACE  \ place registers in 16 bit RAM 
       8400 DSTACK     \ set data stack in 16 bit RAM 
       83F0 RSTACK     \ set return stack in 16 bit RAM   
+   DECIMAL            \ switch to decimal numbers 
    ] ( switch back to compile mode )  
 
-   FFFF            \ Literal numbers go onto data stack
+   65535          \ Literal numbers go onto data stack
    BEGIN
      1-            \ dec # on top of data stack
    -UNTIL          \ MACHINE FORTH's "not until" operator

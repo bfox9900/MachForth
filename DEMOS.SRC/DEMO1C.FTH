@@ -1,5 +1,5 @@
 \ MACHFORTH DEMO #1C  BEGIN WHILE REPEAT  test program
-\ DEMO shows colon definition place in the PROG: END. structure
+\ DEMO shows colon definition placed in the "PROG: END." structure
 
 COMPILER  \ names space that has compiler directives
    NEW.
@@ -27,6 +27,7 @@ COMPILER  \ names space that has compiler directives
 
 PROG: DEMO1C
       DEMOWHILE
+      
       NEXT,      \ Return to Forth console
 END.
 
