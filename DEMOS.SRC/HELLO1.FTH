@@ -1,5 +1,5 @@
 \ tiny hello world in machine Forth Demo     Sept 23 2021  Fox
-\ uses more common forth syntax, otpimizer off, compiles to 146 bytes
+\ uses more common forth syntax, compiles to 146 bytes
 
 COMPILER              \ Use compiler wordlist (for interpreted words)
    NEW.

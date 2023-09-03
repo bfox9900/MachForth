@@ -343,10 +343,6 @@ HEX
 : DUP     TOS PUSH, ;
 : DROP    TOS POP,  ; 
 
-\ same for return stack. R11 caches the top of Return stack 
-: RDUP    R11 RPUSH, ;
-: RDROP   R11 RPOP, ; 
-
 : @     ( TOSaddr -- n) *TOS TOS MOV, ;
 
 \ added byte operations: BFox
@@ -388,22 +384,24 @@ PREVIOUS DEFINITIONS
 
 : C!A       TOS SWPB,  DUPC!A  DROP ;
 : C!A+      TOS SWPB,  DUPC!A+  DROP ;
-
 \ useful addition
 : A+!     TOS W ADD,   DROP ;
 
 .( .)
 \ return stack operators ........................
-\ *simplified* If you want more use Assembler 
-: DUP>R   RDUP  TOS R11 MOV, ;        \ BFOX addition 
-: >R      DUP>R DROP ;                \ push TOS onto Rstack ;
-: R>      DUP   R11 TOS MOV,  RDROP ; \ pop Rstack onto TOS  ;
+\ same for return stack. R11 caches the top of Return stack 
+: RDUP    R11 RPUSH, ;
+: RDROP   R11 RPOP, ; 
 
-: @R+     DUP   *R11+ TOS MOV, ;
-: !R+     RDUP  TOS *R11+ MOV, ;
+: DUP>R ( n -- n) RDUP  TOS R11 MOV, ; \ BFOX addition 
+: >R    ( n --)   DUP>R DROP ;         \ push TOS onto Rstack ;
+: R@    ( -- n)   DUP  R11 TOS MOV, ;  \  push(T) T=I
+: R>    ( -- n)   R@  RDROP ;          \ pop Rstack onto TOS  ;
+
+: @R+   ( -- n)   DUP   *R11+ TOS MOV, ;
+: !R+   ( n --)  RDUP  TOS *R11+ MOV, ;
 
 \ get top of Rstack onto TOS non-destructive
-: R@   ( -- n)  DUP  R11 TOS MOV, ;   \  push(T) T=I
 
 
 \ *change* Uses R11 as loop index 
@@ -502,7 +500,7 @@ PREVIOUS DEFINITIONS
 : ON   ( variable --) *TOS SETO, DROP ;
 : OFF  ( variable --) *TOS CLR,  DROP ;
 : ><   ( n -- )  TOS SWPB, ;
-: R@   ( -- n)  DUP   R11 TOS MOV, ;
+: R@   ( -- n)   DUP  R11 TOS MOV, ;
 
 \ CUT n characters from left side of STRING (addr,len)
 : /STRING ( addr len n -- addr' len' ) TOS *SP SUB,  TOS 2 (SP) ADD,  DROP ;
