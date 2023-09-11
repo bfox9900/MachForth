@@ -7,7 +7,7 @@ VARIABLE X
 VARIABLE Y 
 
 PROG: MAIN 
-    X @ IF  X OFF  ELSE X ON  THEN 
+    X @ 0 > IF  X OFF  ELSE X ON  THEN 
    
     NEXT, 
 END.

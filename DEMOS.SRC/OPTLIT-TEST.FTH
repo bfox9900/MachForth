@@ -10,9 +10,9 @@ VARIABLE X
 VARIABLE Y
 
 PROG: DEMO2
-     X @ Y ! 
-     Y @ X ! 
-     X @ Y ! 
+  \   X @ Y ! 
+  \   Y @ X ! 
+  \   X @ Y ! 
 
     NEXT,    
 END.
