@@ -6,7 +6,8 @@
 \ *To cross-compile a program
 \  With the MACHFORTH ready type: INCLUDE <DSK2.MYPROGRAM>
 
-\ AUG 24 2023 I went for it and now use R11 as the top of Rstack. 
+\ AUG 24 2023 I went for it and now use R11 as the top of Rstack cache
+\ Oct 1 2023  R8 is now the for next loop counter register "i"
 
 NEEDS FORTH     FROM DSK1.WORDLISTS
 
@@ -390,7 +391,7 @@ PREVIOUS DEFINITIONS
 : C!A       TOS SWPB,  DUPC!A  DROP ;
 : C!A+      TOS SWPB,  DUPC!A+  DROP ;
 \ useful addition
-: A+!     TOS W ADD,   DROP ;
+: A+!       TOS W ADD,   DROP ;
 
 .( .)
 \ return stack operators ........................
@@ -400,7 +401,7 @@ PREVIOUS DEFINITIONS
 
 : DUP>R ( n -- n) RDUP  TOS R11 MOV, ; \ BFOX addition 
 : >R    ( n --)   DUP>R DROP ;         \ push TOS onto Rstack ;
-: R@    ( -- n)   DUP  R11 TOS MOV, ;  \  push(T) T=I
+: R@    ( -- n)   DUP  R11 TOS MOV, ;  \ push(T) T=I
 : R>    ( -- n)   R@  RDROP ;          \ pop Rstack onto TOS  ;
 
 : @R+   ( -- n)   DUP   *R11+ TOS MOV, ;
@@ -409,10 +410,11 @@ PREVIOUS DEFINITIONS
 \ get top of Rstack onto TOS non-destructive
 
 
-\ *change* Uses R11 as loop index 
-: FOR  ( n --) >R BEGIN ;
-: NEXT ( -- )  R11 DEC,   -UNTIL  RDROP ;
-: NEXT2 ( -- ) R11 DECT,  -UNTIL  RDROP ;
+\ *change* Uses R8 as loop index 
+: FOR  ( n --) R8 RPUSH, TOS R8 MOV, TOS POP,  BEGIN, ;
+: NEXT ( -- )  R8 DEC,   NC UNTIL,  R8 RPOP, ;
+: NEXT2 ( -- ) R8 DECT,  NC UNTIL,  R8 RPOP, ;
+: i     TOS PUSH,  R8 TOS MOV, ;
 
 \ __________[ Chuck Moore Machine Forth Ends ]__________
 

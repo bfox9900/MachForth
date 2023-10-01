@@ -21,11 +21,10 @@ CREATE B$  S" 2nd line of text." S,
        A$ COUNT TYPE
        B$ COUNT TYPE
       NEXT ;
-OPT-ON
 
 DECIMAL
 PROG: DEMO13
-      PAGE
+      TEXT 
       0 0 AT-XY
       A$ COUNT TYPE CR
       B$ COUNT TYPE
@@ -36,4 +35,4 @@ PROG: DEMO13
 END.
 
 \ patch TARGET variable MDP, that holds end of memory
-COMPILER THERE 4 +   TARGET T' DP T!
+COMPILER THERE 4 +   TARGET T' MEM T!

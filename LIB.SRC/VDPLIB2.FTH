@@ -26,11 +26,11 @@ ENDCODE
 ;
 
 : VC! ( c Vaddr -- )
-    [ 4000 OR]               \ TOS ORI, instruction used 
+    [ 4000 OR]                  \ TOS ORI, instruction used 
       VDPADR!  
       DROP                      \ c -> TOS 
     [ 9 R1 () VDPWD @@ MOVB, ]  \ Odd byte R4, write to screen
-    DROP                       \ refill TOS
+    DROP
 ;
 
 HEX
@@ -56,7 +56,7 @@ HEX
     >R                     \ Move len into R11 (loop index)
     A!       
     VDPADR! DROP
-    BEGIN   ( R> FOR) 
+    BEGIN   ( FOR is just: >R BEGIN ) 
       [ VDPRD @@  *A+ MOVB, ]
     NEXT
     DROP
@@ -68,7 +68,7 @@ HEX
     VDPADR! DROP          \ set VDP write address
     VDPWD A!              \ store VDP write data port in A register
     DROP 
-    BEGIN  ( R> FOR ) 
+    BEGIN   ( FOR is just: >R BEGIN ) 
       [ *TOS+ *A  MOVB, ]
     NEXT
     DROP

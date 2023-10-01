@@ -16,7 +16,7 @@ COMPILER  \ preamble to set up target image
   HEX 2000 ORIGIN.
 
 \ load libraries in compiler space
- INCLUDE DSK2.VDPLIB
+ INCLUDE DSK2.VDPLIBX
 
 COMPILER   ( constants must be declared in COMPILER )
 DECIMAL
@@ -30,9 +30,9 @@ TARGET
 
 \ these words end with a function call so we can tail-call optimize with -;
 \ Saves 3 BYTES per usage :-)
-: PAGE       ( -- )       0 C/SCR  BL VFILL -;
-: FILLSCREEN ( c -- )  >R 0 C/SCR  R> VFILL -;
-: TYPE       ( addr n --) 0 SWAP VWRITE -; \ write to top of screen only
+: PAGE       ( -- )       0 C/SCR  BL VFILL ;
+: FILLSCREEN ( c -- )  >R 0 C/SCR  R> VFILL ;
+: TYPE       ( addr n --) 0 SWAP VWRITE ; \ write to top of screen only
 
 CREATE TITLE   S" VDPLIB Test Program" S,
 
@@ -41,25 +41,19 @@ PROG: DEMO10
         PAGE
         17 7 VWTR  \ black on cyan
         TITLE COUNT TYPE  WAIT
-        PAGE
+         PAGE
         41 0 VC!  42 1 VC!  43 2 VC!  WAIT  \ write BC
         0 VC@  85 VC!  WAIT   \ read A, copy to screen address HEX 85
-
-        41 FILLSCREEN
-         WAIT
-        42 FILLSCREEN
-        WAIT
-        43 FILLSCREEN
-        WAIT
-        BL 1+ 
-       FFFF
-        FOR  
-          R@ DROP 
-          1+ 
+        5 FOR 
+          20 
+          5E FOR  
+              DUP FILLSCREEN 
+              1+ 
+          NEXT 
+          DROP 
         NEXT 
-        DROP 
 
-        E1 7 VWTR     \ gray on black
+ \       BEGIN ?TERMINAL UNTIL        
         
         NEXT,         \ return to Camel99 Forth
 END.

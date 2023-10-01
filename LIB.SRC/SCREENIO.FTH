@@ -36,10 +36,10 @@ VARIABLE DP  \ you must patch this at end of program
         ROW DUP 1+! @ 24 >IF  SCROLL  THEN DROP ;
 
 : EMIT  ( c --)
-       [ ROW #@  C/L #@ ] *  [ COL #@ ] +  VC!
+       [ ROW @]  [ C/L @] *  [ COL @] +  VC!
        COL DUP 1+! @  [ C/L #@ ] 1- >IF  CR  THEN DROP ;
 
 : TYPE   ( addr len --) FOR  COUNT EMIT  NEXT DROP ;
 
 : SPACE  ( -- )   BL EMIT -; \ tail call optimize
-: SPACES ( n -- ) FOR  SPACE  NEXT ;
+: SPACES ( n -- ) 1- FOR  SPACE  NEXT ;
