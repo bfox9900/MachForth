@@ -16,15 +16,14 @@ HEX
 301 CONSTANT $301
 380 CONSTANT CTAB 
 
-
 TARGET
 : SPRITE  ( char colr x y SPR# -- ) \ create a SPRITE, sp# = 0..31
-           4* SAT + >R     \ compute sprite address, push to R stack
-           R@     VC!      \ set screen y position
+           4* SAT +        \ compute sprite address 
+           DUP>R  VC!      \ set screen y position
            R@ 1+  VC!      \ set screen x
            R@ 3 + VC!      \ set the sprite color
            R@ 2+  VC!      \ set the character pattern to use
-           R> DROP 
+           RDROP 
 ;
 
 : PAGE   0 $300 BL VFILL ;

@@ -97,7 +97,7 @@ COMPILER
 H: -; ( --  )
     LOOKBACK   ( addr )   \ get entry address of sub-routine
     2 CELLS +  ( addr' )  \ move past the sub-routine ENTRY instructions
-   -2 CELLS TALLOT            \ erase BL @addr
+   -2 CELLS TALLOT        \ erase BL @addr
     ( addr')  @@ B,       \ compile a branch to the NEW sub-routine
 ;H
 
@@ -349,7 +349,12 @@ HEX
 : C@    ( TOSaddr -- c) *TOS TOS MOVB,  TOS 8 SRL, ;
 
 : !     ( n TOSaddr --)  *SP+ *TOS MOV, DROP ;
-: C!    ( c addr --) 1 (SP) *TOS MOVB,  SP INCT,  DROP ;
+
+: C!    ( c addr --) 
+    1 (SP) *TOS MOVB,    \  26
+             SP INCT,    \  10   inc. stack pointer by 2
+             TOS POP,    \  22
+;
 
 [CC] .( .)
 : 2*    ( n -- n ) TOS TOS ADD, ;
@@ -507,8 +512,8 @@ PREVIOUS DEFINITIONS
 
 \ **NOT NORMAL FORTH**
 \ Only the 9900 status register is affected
-\ Nothing is put on the data stack
-: ?TERMINAL ( -- )  0020 @@ BL,  NOT ; \ TI-99 ROM sub-routine
+\ At compile time a JUMP token is left on the stack for IF or UNTIL 
+: ?TERMINAL ( -- token) 0020 @@ BL, =  ; \ TI-99 ROM sub-routine
 
 : COUNT  ( Caddr -- addr len )
         TOS PUSH,        \ !!! CANT' USE DUP Need to make the copy

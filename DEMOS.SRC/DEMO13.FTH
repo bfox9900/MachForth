@@ -15,7 +15,6 @@ CREATE B$  S" 2nd line of text." S,
 
 : WAIT        65535 FOR NEXT ;
 
-OPT-OFF
 : SCROLLTEST
   CR
   300 FOR

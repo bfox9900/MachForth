@@ -18,15 +18,15 @@ HEX
 PROG: MAIN
   [ 0 LIMI,           \ disable interrupts
     8300 WORKSPACE    \ Fast RAM for registers
-    83F0 RSTACK       \ and return stack
-    8400 DSTACK ]     \ and Data stack
+    83E0 RSTACK       \ and return stack
+    83FE DSTACK ]     \ and Data stack
 
        0  VDPWA C!     \ store VDP address LSB
     4000  VDPWA C!     \ store VDP address MSB + "write" bit
 
     TXT COUNT  1- FOR  COUNT VDPWD C!  NEXT DROP
 
-	  BEGIN AGAIN       \ loop forever
+	  BEGIN AGAIN 
 END.
 
 COMPILER SAVE DSK2.HELLO1
