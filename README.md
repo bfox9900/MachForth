@@ -23,5 +23,5 @@ stack operations.
 
 ### Oct 1 2023
 - R11 is now the top of return stack cache register 
-- R8  is the for next loop index register. 
+- R9  is the for next loop index register. 
     'i' is used to get the loop index in your programs 

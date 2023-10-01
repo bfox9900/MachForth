@@ -44,7 +44,7 @@ PROG: MAIN
     10 0 AT-XY  MSG1 COUNT TYPE 
     5 15 AT-XY  MSG2 COUNT TYPE 
   \ With BYE we can exit safely when without resetting   
-   BEGIN  ?TERMINAL UNTIL ; 
+   BEGIN  ?TERMINAL UNTIL
    BYE
 END.
 

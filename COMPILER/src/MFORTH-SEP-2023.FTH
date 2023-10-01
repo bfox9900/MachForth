@@ -410,11 +410,11 @@ PREVIOUS DEFINITIONS
 \ get top of Rstack onto TOS non-destructive
 
 
-\ *change* Uses R8 as loop index 
-: FOR  ( n --) R8 RPUSH, TOS R8 MOV, TOS POP,  BEGIN, ;
-: NEXT ( -- )  R8 DEC,   NC UNTIL,  R8 RPOP, ;
-: NEXT2 ( -- ) R8 DECT,  NC UNTIL,  R8 RPOP, ;
-: i     TOS PUSH,  R8 TOS MOV, ;
+\ *change* Uses R9 as loop index 
+: FOR  ( n --) R9 RPUSH, TOS R9 MOV, TOS POP,  BEGIN, ;
+: NEXT ( -- )  R9 DEC,   NC UNTIL,  R9 RPOP, ;
+: NEXT2 ( -- ) R9 DECT,  NC UNTIL,  R9 RPOP, ;
+: i     TOS PUSH,  R9 TOS MOV, ;
 
 \ __________[ Chuck Moore Machine Forth Ends ]__________
 
