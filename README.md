@@ -5,7 +5,7 @@ This is a Native code compiler for 9900 modeled on machine Forth by Charles Moor
 ### Features
 - Most Forth primitives are inlined due to the bulky sub-routine overhead of
 the TMS9900. Stacks are emulated with normal registers.
-- Top of stack is cached in Register 4 for a speed improvement on most words.
+- Top of stack is cached in Register 4 for a speed improvement on most ords.
 - Tail-call optimization is implemented with  -;  operator replacing ;
 This is used manually by the programmer.
 No error detection for misplacement at this time.
