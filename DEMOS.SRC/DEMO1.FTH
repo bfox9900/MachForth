@@ -17,7 +17,7 @@ PROG: DEMO1
     DROP            \ remove number from data stack.
 ( *machine Forth does not clean the stack like standard Forth)
                  
-    NEXT,           \ HOST Forth's NEXT routine gets us back to Forth
+   >HOST            \ back to Forth
 END. 
 
 \ Usage from Forth command line.  

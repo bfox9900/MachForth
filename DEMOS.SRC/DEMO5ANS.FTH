@@ -1,11 +1,10 @@
 \ ANS Forth verion of DEMO5 for speed comparison
-
+HERE
+HEX
 VARIABLE X
 VARIABLE Y
 VARIABLE Z
 
-\ create 1 as a constant. It puts itself on the stack
-  01 CONSTANT 1
 FFFF CONSTANT LOOPS
 
 : DEMO5
@@ -19,3 +18,4 @@ FFFF CONSTANT LOOPS
         REPEAT
         DROP
 ;
+HERE SWAP - DECIMAL . 

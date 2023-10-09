@@ -26,7 +26,6 @@ CREATE MSG2  S" Put text anywhere." S,
 
 \ MACRO: write CHAR, auto-incr. VDP address, drop char  
 : EMIT+  ( char -- )  VDPWD C!  ;
-
 : TYPE   ( addr len -- ) 1- FOR  COUNT  EMIT+  NEXT DROP ;
 
 CODE BYE   0000 @@ BLWP,  ENDCODE 

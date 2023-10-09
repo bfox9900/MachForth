@@ -23,14 +23,13 @@ VARIABLE Z
 : WORD7   WORD6 -;
 : WORD8   WORD7 -;
 : WORD9   WORD8 -;
-: WORD10  WORD9 -;
+: TAILCALL  WORD9 -;
 
 \ using Camel99 workspace for easy testing
-[CC] HEX
-TARGET
+HEX
 PROG: DEMO9
-         400 FOR
-           I@ WORD10   \ return stack holds the loop index
+         FFFF FOR
+           i TAILCALL   \ return stack holds the loop index
          NEXT
 
          NEXT,        \ go back to Forth interpreter

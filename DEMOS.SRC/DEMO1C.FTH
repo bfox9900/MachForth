@@ -28,7 +28,7 @@ COMPILER  \ names space that has compiler directives
 PROG: DEMO1C
       DEMOWHILE
       
-      NEXT,      \ Return to Forth console
+      >HOST      \ Return to Forth console
 END.
 
 \ Usage from Forth command line:

@@ -34,5 +34,5 @@ PROG: DEMO13
       NEXT,   \ return to Camel99 Forth
 END.
 
-\ patch TARGET variable MDP, that holds end of memory
-COMPILER THERE 4 +   TARGET T' MEM T!
+\ patch TARGET variable DP, that holds end of memory
+CONCUR
