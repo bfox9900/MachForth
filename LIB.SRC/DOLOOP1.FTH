@@ -3,13 +3,13 @@
 TARGET
 \ this is a resident sub-routine 
 L: (DO)  ( limit indx -- ) \ setup R stack for looping 
-    [ R0 8000 LI,    \ load "fudge factor" to LIMIT
+      R0 8000 LI,    \ load "fudge factor" to LIMIT
      *SP+ R0  SUB,   \ Pop limit, compute 8000h-limit "fudge factor"
       R0  TOS ADD,   \ loop ctr = index+fudge
-          R0  RPUSH,
+          R0  RPUSH,5
           TOS RPUSH,
           TOS POP,   \ refill TOS
-              RT, ]
+              RT, 
 
 \ These MACROS generate inline code 
 COMPILER 

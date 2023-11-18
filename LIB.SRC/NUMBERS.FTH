@@ -1,8 +1,9 @@
 \ numbers.fth  MachForth number printing lib
 COMPILER
 \ constants declared in compiler space
-\  CHAR 0 EQU '0'
+  CHAR 0 EQU '0'
   CHAR - CONSTANT '-'
+
 HEX 3FFF CONSTANT #BUFF \ top end of low RAM used as digit buffer
 
 TARGET
@@ -12,23 +13,23 @@ VARIABLE BASE
 VARIABLE HP
 
 DECIMAL
-: >DIGIT  ( n -- c)
-      [ TOS 9 CI,
-        HI IF,
-            TOS 7 AI,
-        ENDIF,
-        TOS 30 AI, ]
-;
+CODE >DIGIT  ( n -- c)
+    TOS 9 CI,
+    HI IF,
+        TOS 7 AI,
+    ENDIF,
+    TOS '0' AI,
+ENDCODE 
 
 TARGET
 \ : HOLD   ( char -- )  HP DUP 1-! @ C! ;  \ 11 instructions
-: HOLD  ( char -- )  \ 5 instructions
-       [ HP @@ DEC,
-         HP @@ R1 MOV,
-         TOS SWPB,
-         TOS R1 ** MOVB, ]
-         DROP
-;
+CODE HOLD  ( char -- )  \ 5 instructions
+    HP @@ DEC,
+    HP @@ R1 MOV,
+    TOS SWPB,
+    TOS R1 ** MOVB,
+    DROP
+ENDCODE
 
 \ [ BASE #@ ] does symbolic addressing to fetch variable faster
 : #      ( u -- ud2 )

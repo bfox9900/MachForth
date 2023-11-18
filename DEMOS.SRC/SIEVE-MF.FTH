@@ -1,8 +1,11 @@
 \ BYTE MAGAZINE SIEVE in MACHFORTH 
+COMPILER
+   NEW.
+   HEX 2000 ORIGIN.
 
+INCLUDE DSK2.DOLOOP 
 INCLUDE DSK2.SCREENIO
 INCLUDE DSK2.NUMBERS 
-INCLUDE DSK2.DOLOOP 
 
 DECIMAL
  8190 CONSTANT SIZE
@@ -13,9 +16,9 @@ FLAGS OFF
 
 : FILLW ( n len addr -- ) 
 \ reversed params works better in MF
-      A!       \ put address in A register 
+      A!        \ put address in A register 
       FOR 
-       DUP !A  \ store TOS in *A 
+        DUP !A  \ store TOS in *A 
       NEXT 
       DROP 
 ;
@@ -41,7 +44,7 @@ FLAGS OFF
 
 
 PROG: SIEVE
- [ 
+ [ HEX
    8300 WORKSPACE 
    8400 DSTACK 
    83E0 RSTACK
@@ -51,21 +54,5 @@ PROG: SIEVE
    NEXT, 
 END.    
 
-
-PROG: SIEVE
- [ 
-   8300 WORKSPACE 
-   8400 DSTACK 
-   83E0 RSTACK
-  ]
-   PAGE S"  10 Iterations" TYPE 
-   10 0 
-   DO  
-      DO-PRIME  CR SPACE .  S" Primes" TYPE
-   LOOP
-   CR S" Done!" TYPE 
-
-   BEGIN AGAIN 
-END. 
 
 

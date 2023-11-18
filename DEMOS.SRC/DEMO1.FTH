@@ -9,6 +9,7 @@ COMPILER            \ names space that has compiler directives
    NEW.             \ init heap memory, clear TARGET vocabulary
    HEX 2000 ORIGIN.
 
+TARGET 
 PROG: DEMO1
     FFFF            \ Literal numbers go onto data stack
     BEGIN
@@ -17,7 +18,7 @@ PROG: DEMO1
     DROP            \ remove number from data stack.
 ( *machine Forth does not clean the stack like standard Forth)
                  
-   >HOST            \ back to Forth
+    NEXT,           \ back to Forth
 END. 
 
 \ Usage from Forth command line.  
