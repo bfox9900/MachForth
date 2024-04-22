@@ -1,0 +1,4 @@
+Mar 2024
+
+Implementing a literal stack so we can make better decisions at compile time
+about using registers or memory addresses. 

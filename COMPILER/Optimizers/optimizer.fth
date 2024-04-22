@@ -15,9 +15,9 @@ INCLUDE DSK1.SEARCH
 
 HEX
 \ create the problem instructions as byte-counted binary strings
-CREATE DROP/DUP$  ALIGN  6 C,  C136 , 0646 , C584 ,  ALIGN  
+CREATE DROP/DUP$    6 C,  C136 , 0646 , C584 ,  ALIGN  
 \                              8 SLA  SWPB 
-CREATE SWPB$      ALIGN  4 C,  0984 , 06C4 ,  ALIGN
+CREATE SWPB$        4 C,  0984 , 06C4 ,  ALIGN
 
 
 : "DROP/DUP" ( -- addr len) DROP/DUP$ COUNT ;

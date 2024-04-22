@@ -19,9 +19,22 @@ PROG: DEMO1
 ( *machine Forth does not clean the stack like standard Forth)
                  
     NEXT,           \ back to Forth
-END. 
+END.                \ 20 bytes versus 10 + header in Forth
 
 \ Usage from Forth command line.  
 \ We need the TARGET directive so MACHFORTH can find the word DEMO1
 
-\ TARGET DEMO1 RUN
+\ Same program in Standard Forth 
+\ HEX
+\ HERE
+\ : DEMO1
+\    FFFF            \ Literal numbers go onto data stack
+\    BEGIN
+\      1-            \ dec # on top of data stack
+\    0= UNTIL          \ MACHINE FORTH's "not until" operator
+\    DROP            \ remove number from data stack.
+\ ;
+HERE SWAP - DECIMAL . .( bytes)
+
+( *machine Forth does not clean the stack like standard Forth)
+               \ 20 bytes versus 28 bytes in Forth (includes header)
