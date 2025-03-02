@@ -296,7 +296,6 @@ H: CREATE ( -- addr)
 H: VARIABLE  ( -- addr) CREATE   0000 T, ;H
 
 
-
 \ ______________________________________________________________
 \ Forth virtual machine setup directives require literal arg.
 : WORKSPACE] ( addr --) LWPI, ;        \ Forth workspace
