@@ -10,6 +10,7 @@ COMPILER             \ Use compiler wordlist (for interpreted words)
 COMPILER 
 8C02 CONSTANT VDPWA     \ Write Address port
 8C00 CONSTANT VDPWD     \ Write Data port
+  20 CONSTANT BL        \ space char. (blank)
 
 CREATE MSG1  S" Hello World!" S,
 CREATE MSG2  S" Put text anywhere." S,
@@ -28,8 +29,12 @@ TARGET
 
 : AT-XY  ( col row -- ) XY>VDP DUP OUT !  WMODE ; 
 
-\ MACRO: write CHAR, auto-incr. VDP address, drop char  
+\ Native sub-routines created with colon
+
+\ write CHAR, auto-incr. VDP address, drop char  
 : EMIT+  ( char -- )  VDPWD C!  OUT 1+! ;
+
+\ type string to screen, no scrolling.
 : TYPE   ( addr len -- ) 1- FOR  COUNT  EMIT+  NEXT DROP ;
 
 \ simple version 
@@ -37,8 +42,11 @@ TARGET
 
 \ faster version 
 : PAGE   
-  0 0 AT-XY  OUT @ A! 
-  300 FOR  22 C!A+ NEXT 
+  0 0 AT-XY             \ set screen x,y
+  OUT @ A!              \ get the y value into A register
+  300 FOR  
+      BL C!A+           \ TOS SWPB, TOS *AR+ MOVB,  
+  NEXT  
   DROP ;
 
 CODE BYE   0000 @@ BLWP,  ENDCODE 
@@ -46,13 +54,14 @@ CODE BYE   0000 @@ BLWP,  ENDCODE
 HEX
 PROG: MAIN
 \ Setup Forth virtual machine
-  [ 0 LIMI,           \ disable interrupts
+  [                   \ interpret mode
+    0 LIMI,           \ disable interrupts
     8300 WORKSPACE    \ Fast ram for registers
     83F0 RSTACK       \ and return stack
     8400 DSTACK       \ and Data stack
-  ] 
+  ]                   \ turn on compiler 
 
-  [ DECIMAL ]
+  [ DECIMAL ]         \ use interpreter to change radix  
     PAGE 
     10 0 AT-XY  MSG1 COUNT TYPE 
     5 15 AT-XY  MSG2 COUNT TYPE 

@@ -8,7 +8,7 @@
 
 \ AUG 24 2023 I went for it and now use R11 as the top of Rstack cache
 \ Oct 1 2023  R8 is now the for next loop counter register "i"
-\ MAR 6 2024  Added literal stack and smart registers <TOS> <NOS> 
+\ MAR 6 2024  Added literal stack and smart registers <TOS> <NOS>
 
 NEEDS FORTH     FROM DSK1.WORDLISTS
 
@@ -38,23 +38,23 @@ VARIABLE XSTATE  \ CROSS-COMPILER state variable
 HEX
 XASSEMBLER DEFINITIONS
 
-DECIMAL 
+DECIMAL
 : ADDRESS?  ( n -- ?) 8191 U> ; \ lowest RAM address is 8192
 
 HEX
 : REG?      ( n -- ?)   0 10 WITHIN ;
 : MODE?     ( n -- ?)  1F 30 WITHIN ;
 
-\ aborting error detection words 
+\ aborting error detection words
 : ?ADDR     ( addr -- addr) DUP ADDRESS? 0= ABORT" Valid address expected" ;
 : ?REGISTER ( reg --reg)    DUP REG? 0= ABORT" Register expected" ;
 
 
 \ _______________________________________________
-\ build a literal stack that the compiler uses 
+\ build a literal stack that the compiler uses
 \ to hold variables, constants and literal numbers
 \ By keeping numbers on the literal stack we can
-\ decide the best action for these data types. 
+\ decide the best action for these data types.
 
 10 LIFO: LSTK
 : LPUSH     ( n --) LSTK PUSH ;
@@ -62,11 +62,11 @@ HEX
 : LITARG?   ( -- n) LSTK STACK-DEPTH ;
 
 : LIT,      ( n -- ) \ If interpreting just put n on Forth stack.
-    XSTATE @         
+    XSTATE @
     IF               \ IF CROSS-compiling, emit machine code
-      TOS PUSH,  
+      TOS PUSH,
       TOS SWAP LI,   \ compile n as a literal number into R4.
-    THEN ;         
+    THEN ;
 
 ONLY FORTH DEFINITIONS ALSO XASSEMBLER
 : <MFINTERP> ( c-addr u -- ) \ machforth compiler interpret loop
@@ -194,7 +194,7 @@ HEX
        DUP 3000 2004 WITHIN ABORT" Can't RUN. ORG must be >2000"
        (RUN) [ FORTH ]  DROP ;
 
-COMPILER        
+COMPILER
 \ _____________________________________________________________
 \ cross-compiler directives
 : (NEW)
@@ -234,11 +234,11 @@ H: S"  ( -- addr len)  [CHAR] " PARSE ;H
 : ?RUN-TARGET    XSTATE @ 0= ABORT" Can't run TARGET word" ;
 
 H: CODE
-TARGET CREATE            \ word goes into TARGETS wordlist  
+TARGET CREATE            \ word goes into TARGETS wordlist
          !CSP
          THERE ,
          R11 RPUSH,      \ automatically add saving R11 on entry
-         [ 
+         [
        DOES> ?RUN-TARGET
              @ REL>TARG @@ BL, ;H
 
@@ -270,26 +270,26 @@ H: ;M     R11 RPOP,  RT,    \ compile exit sub-routine code
 \ _____________________________________________________________
 \ data structure creation
 \ These data structures are XSTATE smart. They either push their
-\ data onto the literal stack or 
+\ data onto the literal stack or
 \ return an address or a value to the Host Forth stack
 
 COMPILER
-\ just give the compiler the value ie: Forth's CONSTANT 
-H: EQU   ( n -- <NAME>) CONSTANT ; 
+\ just give the compiler the value ie: Forth's CONSTANT
+H: EQU   ( n -- <NAME>) CONSTANT ;
 
-\ redefine CONSTANT for the cross compiler 
+\ redefine CONSTANT for the cross compiler
 H: CONSTANT ( n -- n)  \ CONSTANT compiles code to put no. in TOS
    CREATE   ,       \ remember n
    DOES> ( pfa ) @ XSTATE @ IF LPUSH THEN  ;H
 
-\ LABEL CREATE and VARIABLE put their names in the TARGETS wordlist 
+\ LABEL CREATE and VARIABLE put their names in the TARGETS wordlist
 
 \ Label creator returns relocated TARGET address when executed
 H: L:   CREATE    THERE REL>TARG ,    DOES>  @  ;H
 
-H: CREATE ( -- addr) 
-      CREATE  
-       THERE REL>TARG ,  
+H: CREATE ( -- addr)
+      CREATE
+       THERE REL>TARG ,
       DOES> @  XSTATE @ IF LPUSH THEN  ;H
 
 \ mforth data structure words
@@ -303,7 +303,7 @@ H: VARIABLE  ( -- addr) CREATE   0000 T, ;H
 : RSTACK]    ( addr --) RP SWAP LI, ;  \ return stack
 
 : PROG: ( <label> -- taddr)
-  TARGET 
+  TARGET
   CREATE !CSP
      THERE REL>TARG DUP ,  \ record program entry in this word and...
      'BOOT !               \ store relocated address in program header
@@ -330,21 +330,21 @@ COMPILER
 \ compute signed offset & compile into the 2nd byte of any 9900 JUMP instruction
 : RESOLVE ( addrofjmp byte --)  2- 2/ SWAP 1+ C! ;
 : <BACK   ( addr addr' -- ) TUCK -  RESOLVE ;
-\ synonyms from Assembler 
-: IF     IF, ; 
-: THEN   ENDIF, ; 
-: ELSE   ELSE, ; 
-: BEGIN  BEGIN, ; 
+\ synonyms from Assembler
+: IF     IF, ;
+: THEN   ENDIF, ;
+: ELSE   ELSE, ;
+: BEGIN  BEGIN, ;
 : WHILE  WHILE, ;
-: AGAIN  AGAIN, ; 
-: UNTIL  UNTIL, ; 
-: REPEAT REPEAT, ; 
+: AGAIN  AGAIN, ;
+: UNTIL  UNTIL, ;
+: REPEAT REPEAT, ;
 
-\ aliases for Assembler jump tokens 
-\ This is NOT conventional Forth. 
-\ These work just like the TI-fORTH Assembler but with different names 
+\ aliases for Assembler jump tokens
+\ This is NOT conventional Forth.
+\ These work just like the TI-fORTH Assembler but with different names
 : =      EQ ;
-: <>     NE ; 
+: <>     NE ;
 : <      LTE ;
 : >      GTE ;
 : U>     LO ;
@@ -352,30 +352,30 @@ COMPILER
 : U>=    HE ;
 : U<=    LE ;
 
-\ hard comparison of TOS to zero 
+\ hard comparison of TOS to zero
 : 0=     TOS 0 CI,  = ;
 
 
-\ From original Machine Forth 
-: -IF    ( -- $$)    THERE 0 JOC, ; 
+\ From original Machine Forth
+: -IF    ( -- $$)    THERE 0 JOC, ;
 : -WHILE  ( -- )     -IF SWAP ;
-: -UNTIL  ( addr --) -IF <BACK ;  \ used in FOR/NEXT 
+: -UNTIL  ( addr --) -IF <BACK ;  \ used in FOR/NEXT
 
 \ Used by DO/LOOP
-: OV.UNTIL ( addr --) THERE  0 JNO, <BACK  ; 
+: OV.UNTIL ( addr --) THERE  0 JNO, <BACK  ;
 
 \ ______________________________________________________________
 COMPILER
 \ Protected register arguments used where there must be a register
-: .TOS.  ( n -- n)  ?REGISTER  TOS ;  \ force a register argument 
+: .TOS.  ( n -- n)  ?REGISTER  TOS ;  \ force a register argument
 
-\ smart registers replace register with arg from the literal stack 
-: <SYMBOLIC> ( -- n n) LPOP @@ ; \ literal stack value symbolic 
+\ smart registers replace register with arg from the literal stack
+: <SYMBOLIC> ( -- n n) LPOP @@ ; \ literal stack value symbolic
 
 : <TOS>   LITARG? IF <SYMBOLIC>   ELSE   TOS    THEN ;
 : <*TOS>  LITARG? IF <SYMBOLIC>   ELSE  *TOS    THEN ;
 
-\ NEXT on stack 
+\ NEXT on stack
 : <NOS>   LITARG? IF <SYMBOLIC>   ELSE  *SP     THEN ;
 \ POP next on stack
 : <NOS+>  LITARG? IF <SYMBOLIC>   ELSE  *SP+    THEN ;
@@ -392,7 +392,7 @@ COMPILER
 HEX
 \  Moore's Machine Forth + a few extras
 : DUP     TOS PUSH, ;
-: DROP    TOS POP,  ; 
+: DROP    TOS POP,  ;
 
 : @     ( TOSaddr -- n) <*TOS> <TOS> MOV, ;
 : !     ( n TOSaddr --) <NOS+> <*TOS> MOV,  DROP ;
@@ -400,7 +400,7 @@ HEX
 \ added byte operations: BFox
 : C@    ( TOSaddr -- c) <*TOS> TOS MOVB,  TOS 8 SRL, ;
 
-: C!    ( c addr --) 
+: C!    ( c addr --)
     1 (SP) <*TOS> MOVB,  \  26
              SP INCT,    \  10   inc. stack pointer by 2
              TOS POP,    \  22
@@ -410,7 +410,7 @@ HEX
 : 2*    ( n -- n ) <TOS> TOS ADD, ;
 : 2/    ( n -- n)  <TOS> 1 SRA, ;
 : INVERT ( n -- )  <TOS> INV, ;  ( ANS Forth name )
-: AND  ( n mask -- n) <NOS> INV, <NOS+> <TOS> SZC, ; 
+: AND  ( n mask -- n) <NOS> INV, <NOS+> <TOS> SZC, ;
 : XOR   ( n n -- n)  <NOS+>  TOS XOR, ;   \ (option 1)
 : +     ( n n -- n)  <NOS+> <TOS> ADD, ;   \ (option 1) add on stack
 
@@ -420,10 +420,10 @@ HEX
 \ add alias for W register in the Assembler wordlist
 ALSO XASSEMBLER DEFINITIONS
 :  A     W  ;
-: *A    *W  ;   
+: *A    *W  ;
 : *A+   *W+ ;
 
-PREVIOUS DEFINITIONS 
+PREVIOUS DEFINITIONS
 : A       DUP    W  TOS MOV, ;
 : A!      TOS    W  MOV,  DROP ;
 
@@ -444,26 +444,25 @@ PREVIOUS DEFINITIONS
 
 .( .)
 \ return stack operators ........................
-\ same for return stack. R11 caches the top of Return stack 
+\ same for return stack. R11 caches the top of Return stack
 : RDUP    R11 RPUSH, ;
-: RDROP   R11 RPOP, ; 
+: RDROP   R11 RPOP, ;
 
-: DUP>R ( n -- n) RDUP  TOS R11 MOV, ; \ BFOX addition 
+: DUP>R ( n -- n) RDUP  TOS R11 MOV, ; \ BFOX addition
 : >R    ( n --)   DUP>R DROP ;         \ push TOS onto Rstack ;
-: R@    ( -- n)   DUP  R11 TOS MOV, ;  \ push(T) T=I
 : R>    ( -- n)   R@  RDROP ;          \ pop Rstack onto TOS  ;
 
-: @R+   ( -- n)   DUP   *R11+ TOS MOV, ;
+\ get top of Rstack onto TOS non-destructive
+: R@    ( -- n)   DUP  R11 TOS MOV, ;    \ push(T) T=I
+: @R+   ( -- n)   DUP   *R11+ TOS MOV, ; \ R@ with autoincrement by 2
 : !R+   ( n --)  RDUP  TOS *R11+ MOV, ;
 
-\ get top of Rstack onto TOS non-destructive
 
-
-\ *change* Uses R9 as loop index 
-: FOR  ( n --) R9 RPUSH, TOS R9 MOV, TOS POP,  BEGIN, ;
-: NEXT ( -- )  R9 DEC,   NC UNTIL,  R9 RPOP, ;
-: NEXT2 ( -- ) R9 DECT,  NC UNTIL,  R9 RPOP, ;
-: i     TOS PUSH,  R9 TOS MOV, ;
+\ *change* Uses R9 as loop index
+: FOR  ( n --) R11 RPUSH, TOS R11 MOV, TOS POP,  BEGIN, ;
+: NEXT ( -- )  R11 DEC,   NC UNTIL,  R11 RPOP, ;
+: NEXT2 ( -- ) R11 DECT,  NC UNTIL,  R11 RPOP, ;
+: i     ( -- u) TOS PUSH,  R11 TOS MOV, ;
 
 \ __________[ Chuck Moore Machine Forth Ends ]__________
 
@@ -504,24 +503,24 @@ PREVIOUS DEFINITIONS
 : +]    ( n [n] --)  ]  TOS SWAP AI,  ; \ (option 2) TOS + literal number
 : AND]  ( n [n] --n) ]  TOS SWAP ANDI, ;    \ and TOS with literal number
 
-\ compare TOS to a literal number 
-\ Usage:  X  [ 77 ?] = IF  
+\ compare TOS to a literal number
+\ Usage:  X  [ 77 ?] = IF
 :  ?]  ( n lit -- n)  TOS  SWAP CI, ;
 
 \ special 9900 instructions
-: LD]    ( register -- )  TOS SWAP LI,  ;   \ load a register 
-: LWPI]  ( literal -- )   TOS SWAP LWPI, ;  \ load workspace 
+: LD]    ( register -- )  TOS SWAP LI,  ;   \ load a register
+: LWPI]  ( literal -- )   TOS SWAP LWPI, ;  \ load workspace
 
 \ indexed addressing uses TOS (ie: R4) as the index register
 \ But we have to compile a literal INDEX into the instruction
-\ so we rely on the [  ] operator again. 
+\ so we rely on the [  ] operator again.
 \   Q [ 12 ]@
 : ]@  ( i addr -- n )  (TOS) <TOS> MOV, ;
 
 \ BEEF  Q [ 13 ]!
 : ]!   ( n i addr -- )  <NOS+> SWAP (TOS) MOV, DROP ;
 
-\ instructions that require numbers compiled into the code 
+\ instructions that require numbers compiled into the code
 \ These words in conventional Forth require 10 bytes each!
 : LSHIFT] ( n -- n)  TOS SWAP SLA, ;
 : RSHIFT] ( n -- n)  TOS SWAP SRL, ;
@@ -549,7 +548,7 @@ PREVIOUS DEFINITIONS
 
 \ **NOT NORMAL FORTH**
 \ Only the 9900 status register is affected
-\ At compile time a JUMP token is left on the stack for IF or UNTIL 
+\ At compile time a JUMP token is left on the stack for IF or UNTIL
 : ?TERMINAL ( -- token) 0020 @@ BL, =  ; \ TI-99 ROM sub-routine
 
 : COUNT  ( Caddr -- addr len )
@@ -559,7 +558,7 @@ PREVIOUS DEFINITIONS
         TOS 8 SRL, ;
 
 
-\ compare TOS to a literal number 
+\ compare TOS to a literal number
 : #=]  ( n lit -- n)  TOS  SWAP CI, EQ ;
 : #<>] ( n lit -- n)  TOS  SWAP CI, NE ;
 
@@ -599,7 +598,7 @@ HEX
    8300 CONSTANT WKSP0  \ default workspace for programs
 
 ALSO FORTH DEFINITIONS
-: NEW.  
+: NEW.
     (NEW)
     ['] WKSP0 CFA>NFA ['] MFORTH >BODY ! ;
 

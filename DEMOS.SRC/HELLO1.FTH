@@ -16,10 +16,12 @@ CREATE TXT  S" Hello World!" S,
 
 HEX 
 PROG: MAIN
-  [ 0 LIMI,           \ disable interrupts
+  [                   \ switch to interpreting 
+    0 LIMI,           \ disable interrupts
     8300 WORKSPACE    \ Fast RAM for registers
     83E0 RSTACK       \ and return stack
-    83FE DSTACK ]     \ and Data stack
+    83FE DSTACK       \ and Data stack
+  ]                   \ turn on compiler    
 
        0  VDPWA C!     \ store VDP address LSB
     4000  VDPWA C!     \ store VDP address MSB + "write" bit
